@@ -47,19 +47,21 @@ def repl(username):
             continue
         
         # Split input in separate words in a list
-        cmd_parts = line.split()
-        cmd = cmd_parts[0].lower()
+        parts = line.split()
+        cmd = parts[0].lower()
 
         if cmd == 'help':
             print_help()
-        elif cmd in ('quit', 'exit'):
+        if cmd in ('quit', 'exit'):
             print("Exiting hackr. Goodbye.")
             break
-        elif cmd == "social":
-            socials_cmd(target)
-        else:
-            # Placeholder for future commands 
-            print(f"[stub] Command '{cmd}' received but not implemented yet.")
+        if cmd == "socials":
+            arg = parts[1] if len(parts) > 1 else None
+            socials_cmd(arg)
+            continue
+
+        # Placeholder for future commands 
+        print(f"[stub] Command '{cmd}' received but not implemented yet.")
 
 
 def main():
