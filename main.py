@@ -7,8 +7,9 @@ from features.social_media import socials_cmd
 
 # Main Header using Figlet library
 def print_header(name="HACKR"):
+    print("\n")
     f = Figlet(font="ansi_shadow")
-    print(f.renderText("hackr"))
+    print(f.renderText(" hackr"))
 
 # Very fast temporarily for better responses.
 # TODO: Make speed slower later
@@ -28,7 +29,7 @@ terminal hacker simulator
 A fun feel of hacking like in the movies, completely harmless and very fun!
 
 \033[1mCOMMANDS\033[0m
-socials <username>, s : Simulate enumerating public social links for <username>.
+socials, s <username> : Simulate enumerating public social links for <username>.
                         If <username> is omitted, you will be prompted to enter one.
 help                  : Show this help menu.
 exit, quit, q         : Exit the program.
@@ -47,8 +48,8 @@ def repl(username):
             continue
         
         # Split input in separate words in a list
-        parts = line.split()
-        cmd = parts[0].lower()
+        cmd_parts = line.split()
+        cmd = cmd_parts[0].lower()
 
         if cmd == 'help':
             print_help()
@@ -56,7 +57,10 @@ def repl(username):
             print("Exiting hackr. Goodbye.")
             break
         elif cmd == "socials" or cmd == "s":
-            arg = parts[1] if len(parts) > 1 else None
+            arg = cmd_parts[1] if len(cmd_parts) > 1 else None
+            if arg is not None and len(arg) < 3:
+                print("Error: username must be at least 3 characters.")
+                continue
             result = socials_cmd(arg)
             if result == "exit":
                 print("Exiting hackr. Goodbye.")

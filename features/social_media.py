@@ -7,13 +7,25 @@ def _random_password(length=10):
     return "".join(random.choice(chars) for _ in range(length))
 
 def socials_cmd(username=None):
-    # if user didn't provide username with command
-    if not username:
-        username = input("Enter username to hack: ").strip()
-        if not username:
-            print("No username provided. Aborting.")
-            return
-    
+    # if a username was provided as an argument, validate it
+    if username is not None:
+        username = username.strip()
+        if len(username) < 3:
+            print("Error: username must be at least 3 characters.")
+            return None
+    else:
+        # prompt for username until it's valid or the user aborts
+        while True:
+            username = input("Enter username to hack: ").strip()
+            if not username:
+                print("No username provided. Aborting.")
+                return None
+            if len(username) < 3:
+                print("Username must be at least 3 characters.")
+                # loop again to reprompt
+                continue
+            break  # got a valid username
+            
     # Initialization progress bar
     print("\nInitializing...\n")
     with alive_bar(100) as bar:
@@ -23,7 +35,7 @@ def socials_cmd(username=None):
     print()
 
     # confirmation after receiving username
-    ans = input(f"Proceed with simulated socials flow for '{username}'? (y/n): ").strip().lower()
+    ans = input(f"Is the username @{username} correct? (y/n): ").strip().lower()
     if not ans or ans[0] != "y":
         print("Cancelled.")
         return
