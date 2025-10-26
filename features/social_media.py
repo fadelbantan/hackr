@@ -30,9 +30,10 @@ def socials_cmd(username=None):
     print("\nInitializing...\n")
     with alive_bar(100) as bar:
         for i in range(100):
-            time.sleep(0.005) # Short for testing TODO: increase later
+            time.sleep(0.025)
             bar()
     print()
+    time.sleep(0.6)
 
     # confirmation after receiving username
     ans = input(f"Is the username @{username} correct? (y/n): ").strip().lower()
@@ -42,14 +43,15 @@ def socials_cmd(username=None):
     
     # Executing timer
     print("\nExecuting...\n")
-    with alive_bar(60) as bar:
-        for i in range(60):
-            time.sleep(0.02)  # TODO: increase timer
+    with alive_bar(80) as bar:
+        for _ in range(80):
+            time.sleep(0.045)
             bar()
     print()
+    time.sleep(0.7)
 
     # local typewriter function
-    def _typewriter(text, speed=0.003):
+    def _typewriter(text, speed=0.04):
         for ch in str(text):
             sys.stdout.write(ch)
             sys.stdout.flush()
@@ -76,22 +78,23 @@ def socials_cmd(username=None):
         "[cleanup] shred_temp_files --passes 1"
     ]
 
-
     # print each line with typewriter function
     for ln in lines:
-        _typewriter(ln, speed=0.003) # TODO: make a little bit slower
-        time.sleep(random.uniform(0.04, 0.15)) # short pause between lines
+        _typewriter(ln, speed=0.04)
+        time.sleep(random.uniform(0.08, 0.18))
+    time.sleep(0.6)
 
     # Final report
+    domain = ["gmail", "hotmail", "mail", "outlook", "icloud"]
     password = _random_password(10)
-    email = f"{username}.{random.randint(1,999)}@example.com"
+    email = f"{username}.{random.randint(1,999)}@{random.choice(domain)}.com"
 
     print("\n=== HACK REPORT (SIMULATED) ===")
     print(f"Username : {username}")
     print(f"Email    : {email}")
     print(f"Password : {password}")
     print("===============================")
-
+    time.sleep(0.8)
 
     # prompt what to do next
     while True:

@@ -3,6 +3,7 @@
 import sys, time, os
 from pyfiglet import Figlet
 from features.social_media import socials_cmd
+from features.website import website_cmd
 
 
 # Main Header using Figlet library
@@ -11,7 +12,7 @@ def print_header(name="HACKR"):
     f = Figlet(font="ansi_shadow")
     print(f.renderText(" hackr"))
 
-# Very fast temporarily for better responses.
+# typewriter used for script lines
 # TODO: Make speed slower later
 def typewriter(text, speed=0.002):
     for ch in text:
@@ -31,6 +32,8 @@ A fun feel of hacking like in the movies, completely harmless and very fun!
 \033[1mCOMMANDS\033[0m
 socials, s <username> : Simulate enumerating public social links for <username>.
                         If <username> is omitted, you will be prompted to enter one.
+website, w <target>   : Simulate web-app hacking flow against <target> (e.g. example.com).
+                        If <target> is omitted, you will be prompted to enter one.                        
 help                  : Show this help menu.
 exit, quit, q         : Exit the program.
 """
@@ -69,6 +72,13 @@ def repl(username):
             os.system("cls" if sys.platform.startswith("win") else "clear")
             print_header(username)
             print(f"Welcome back {username}, type 'help' for more information.\n")
+
+        elif cmd in ("website", "w"):
+            arg = cmd_parts[1] if len(cmd_parts) > 1 else None
+            res = website_cmd(arg) # TODO: Make slower when done
+            if res == "exit":
+                print("Exiting hackr. Goodbye.")
+                break        
 
 
         # Placeholder for future commands 
