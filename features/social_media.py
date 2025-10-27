@@ -14,22 +14,22 @@ def socials_cmd(username=None):
             print("Error: username must be at least 3 characters.")
             return None
     else:
-        # prompt for username until it's valid or the user aborts
+        # prompt for username until it's valid
         while True:
             username = input("Enter username to hack: ").strip()
             if not username:
-                print("No username provided. Aborting.")
-                return None
+                print("Please enter a username (minimum 3 characters).")
+                continue
             if len(username) < 3:
                 print("Username must be at least 3 characters.")
-                # loop again to reprompt
                 continue
-            break  # got a valid username
+            break  # when a valid username is received
+
             
     # Initialization progress bar
     print("\nInitializing...\n")
     with alive_bar(100) as bar:
-        for i in range(100):
+        for _ in range(100):
             time.sleep(0.025)
             bar()
     print()
@@ -89,7 +89,7 @@ def socials_cmd(username=None):
     password = _random_password(10)
     email = f"{username}.{random.randint(1,999)}@{random.choice(domain)}.com"
 
-    print("\n=== HACK REPORT (SIMULATED) ===")
+    print("\n======   HACK REPORT   ======")
     print(f"Username : {username}")
     print(f"Email    : {email}")
     print(f"Password : {password}")

@@ -13,8 +13,7 @@ def print_header(name="HACKR"):
     print(f.renderText(" hackr"))
 
 # typewriter used for script lines
-# TODO: Make speed slower later
-def typewriter(text, speed=0.002):
+def typewriter(text, speed=0.02):
     for ch in text:
         sys.stdout.write(ch)
         sys.stdout.flush()
@@ -75,7 +74,7 @@ def repl(username):
 
         elif cmd in ("website", "w"):
             arg = cmd_parts[1] if len(cmd_parts) > 1 else None
-            res = website_cmd(arg) # TODO: Make slower when done
+            res = website_cmd(arg)
             if res == "exit":
                 print("Exiting hackr. Goodbye.")
                 break        

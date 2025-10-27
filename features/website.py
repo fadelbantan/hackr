@@ -22,7 +22,6 @@ def load_databases(path="data/databases.py") -> list[str]:
         print(f"[!] Could not load databases: {e}")
         return []
 
-
 # random pass generator
 def _random_pass(length=10):
     chars = string.ascii_lowercase + string.digits
@@ -60,17 +59,24 @@ def website_cmd(target: str = None):
             bar()
     print()
 
-    # Prompt for target if not omitted
-    if not target:
-        target = input("Enter website or domain (e.g. example.com): ").strip()
-        if not target:
-            print("No target provided. Aborting.")
-            return None
 
-    # validate
-    if not _is_valid_target(target):
-        print("Target looks invalid. Expected domain or URL.")
-        return None
+    # Prompt for target if not omitted
+    while True:
+        if not target:
+            target = input("Enter website or domain (e.g. example.com): ").strip()
+
+        if not target:
+            print("No target provided. Try again.\n")
+            target = None
+            continue
+
+        if not _is_valid_target(target):
+            print("Target looks invalid. Expected domain or URL.\n")
+            target = None
+            continue
+
+        # valid input, exit loop
+        break
 
     # normalize display
     display = target
@@ -95,38 +101,41 @@ def website_cmd(target: str = None):
     ]
     for ln in script_lines:
         _typewriter(ln, speed=0.04)
-        time.sleep(random.uniform(0.5, 0.15))
+        time.sleep(random.uniform(0.05, 0.15))
 
     # Load fake DBs from external file and show a small preview
     db_blocks = load_databases()
     if not db_blocks:
-        # default fallback
         db_blocks = [
             "/etc/passwd\nroot:x:0:0:root:/root:/bin/bash\nuser:x:1000:1000:User:/home/user:/bin/bash",
             "/home/admin/notes.txt\nAPI_KEY=abcd-efgh-ijkl\npassword_hint=summer2021",
             "/var/log/auth.log\nOct 25 12:00:00 sshd[123]: Accepted password for admin from 10.0.0.1"
         ]
-    console_preview_count = min(4, len(db_blocks))
+
     print("\nSimulated database samples (preview):\n")
-    for i in range(console_preview_count):
-        block = db_blocks[i].strip()
-        print(f"--- block {i+1} ---")
-        # print first 6 lines to keep it compact
+
+    # pick 5 random unique blocks each time
+    sample_count = min(5, len(db_blocks))
+    selected_blocks = random.sample(db_blocks, sample_count)
+
+    for block in selected_blocks:
+        block = block.strip()
         for j, line in enumerate(block.splitlines()):
             if j >= 6:
                 print("... (truncated) ...")
                 break
             print(line)
         print()
+        time.sleep(1)
 
-    if len(db_blocks) > console_preview_count:
-        print("[dim](... more fake DB blocks available in data/fake_dbs.txt ...)[/dim]\n")
+    if len(db_blocks) > sample_count:
+        print("[dim](... additional data truncated ...)[/dim]\n")
 
     # Run three timers concurrently (simulated stages)
     timers = {
-        "Stage-A: handshake": 1.1, # durations in seconds
-        "Stage-B: brute": 1.6,
-        "Stage-C: assemble": 1.2
+        "Stage-A: handshake": 1.7, # durations in seconds
+        "Stage-B: brute": 2.4,
+        "Stage-C: assemble": 2.6
     }
     state = {name: 0 for name in timers.keys()}
     threads = []
@@ -137,7 +146,6 @@ def website_cmd(target: str = None):
 
     # Display live textual progress for the three timers (main thread polls)
     print("Running concurrent stages:\n")
-    # We'll update the same three lines in place to look live
     try:
         while True:
             # render status lines
@@ -148,7 +156,6 @@ def website_cmd(target: str = None):
                 lines.append(f"{name:20s} [{pct:3d}%]")
                 if pct < 100:
                     done = False
-            # print block (not perfect terminal rewrite but simple)
             print("\r" + "   ".join(lines), end="")
             if done:
                 break
@@ -156,7 +163,6 @@ def website_cmd(target: str = None):
         print()
     except KeyboardInterrupt:
         print("\nInterrupted concurrent stages.")
-        # threads are daemonic; they'll stop at program exit
 
     # short finalization (download + decrypt imitation)
     print("\nDownloading Hacked DataBase from", target)
