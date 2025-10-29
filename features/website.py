@@ -2,7 +2,7 @@ import os, sys, time, random, string, threading, re, runpy
 from alive_progress import alive_bar
 
 # simple regex validator
-def _is_valid_target(t: str) -> bool:
+def _is_valid_target(t):
     if not t:
         return False
     t = t.strip()
@@ -10,7 +10,7 @@ def _is_valid_target(t: str) -> bool:
     return re.match(pattern, t) is not None
 
 # load database blocks from data/databases.py
-def load_databases(path="data/databases.py") -> list[str]:
+def load_databases(path="data/databases.py"):
     """Import DATABASES from a Python file."""
     if not os.path.exists(path):
         return []

@@ -4,7 +4,7 @@ import sys, time, os
 from pyfiglet import Figlet
 from features.social_media import socials_cmd
 from features.website import website_cmd
-
+from features.osint import osint_cmd
 
 # Main Header using Figlet library
 def print_header(name="HACKR"):
@@ -32,10 +32,14 @@ A fun feel of hacking like in the movies, completely harmless and very fun!
 socials, s <username> : Simulate enumerating public social links for <username>.
                         If <username> is omitted, you will be prompted to enter one.
 website, w <target>   : Simulate web-app hacking flow against <target> (e.g. example.com).
-                        If <target> is omitted, you will be prompted to enter one.                        
+                        If <target> is omitted, you will be prompted to enter one.
+osint, o [-n NAME | -e EMAIL | -p PHONE]
+                      : Open-source intelligence lookup. Pass a flag to skip prompts.
+                        Examples: `osint -n "John Doe"`, `osint -e user@mail.com`, `osint -p +966512345678`
 help                  : Show this help menu.
 exit, quit, q         : Exit the program.
 """
+
     print(help_text)
 
 # Read-Eval-Print Loop
@@ -58,6 +62,7 @@ def repl(username):
         elif cmd in ('quit', 'exit', 'q'):
             print("Exiting hackr. Goodbye.")
             break
+
         elif cmd == "socials" or cmd == "s":
             arg = cmd_parts[1] if len(cmd_parts) > 1 else None
             if arg is not None and len(arg) < 3:
@@ -77,8 +82,15 @@ def repl(username):
             res = website_cmd(arg)
             if res == "exit":
                 print("Exiting hackr. Goodbye.")
-                break        
+                break
 
+        elif cmd in ("osint", "o"):
+            # preserve original behavior: accept a single arg if provided, otherwise let the feature prompt
+            arg = cmd_parts[1] if len(cmd_parts) > 1 else None
+            res = osint_cmd(mode=None, value=arg)
+            if res == "exit":
+                print("Exiting hackr. Goodbye.")
+                break
 
         # Placeholder for future commands 
         else:
