@@ -6,6 +6,8 @@ from features.social_media import socials_cmd
 from features.website import website_cmd
 from features.osint import osint_cmd
 
+TYPEWRITER_SPEED = 0.005
+
 # Clear terminal function
 def clear_terminal():
     if sys.platform.startswith("win"):
@@ -22,7 +24,7 @@ def print_header(name="HACKR"):
     print(f.renderText(" hackr"))
 
 # typewriter used for script lines
-def typewriter(text, speed=0.02):
+def typewriter(text, speed=TYPEWRITER_SPEED):
     for ch in text:
         sys.stdout.write(ch)
         sys.stdout.flush()
@@ -81,23 +83,19 @@ def repl(username):
             if result == "exit":
                 print("Exiting hackr. Goodbye.")
                 break
-            # returned to menu
-            clear_terminal()
-            print_header(username)
-            print(f"Welcome back {username}, type 'help' for more information.\n")
 
         elif cmd in ("website", "w"):
             arg = cmd_parts[1] if len(cmd_parts) > 1 else None
-            res = website_cmd(arg)
-            if res == "exit":
+            result = website_cmd(arg)
+            if result == "exit":
                 print("Exiting hackr. Goodbye.")
                 break
 
         elif cmd in ("osint", "o"):
             # preserve original behavior: accept a single arg if provided, otherwise let the feature prompt
             arg = cmd_parts[1] if len(cmd_parts) > 1 else None
-            res = osint_cmd(mode=None, value=arg)
-            if res == "exit":
+            result = osint_cmd(mode=None, value=arg)
+            if result == "exit":
                 print("Exiting hackr. Goodbye.")
                 break
 
