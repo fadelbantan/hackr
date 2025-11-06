@@ -6,6 +6,15 @@ from features.social_media import socials_cmd
 from features.website import website_cmd
 from features.osint import osint_cmd
 
+# Clear terminal function
+def clear_terminal():
+    if sys.platform.startswith("win"):
+        os.system("cls")
+    else:
+        # Reset terminal state to clear both screen and scrollback (like cmd+k)
+        sys.stdout.write("\033c")
+        sys.stdout.flush()
+
 # Main Header using Figlet library
 def print_header(name="HACKR"):
     print("\n")
@@ -73,7 +82,7 @@ def repl(username):
                 print("Exiting hackr. Goodbye.")
                 break
             # returned to menu
-            os.system("cls" if sys.platform.startswith("win") else "clear")
+            clear_terminal()
             print_header(username)
             print(f"Welcome back {username}, type 'help' for more information.\n")
 
@@ -99,8 +108,7 @@ def repl(username):
 
 def main():
     name = input("Enter username: ").strip() or "user"
-    # clear the terminal (cross-platform)
-    os.system("cls" if sys.platform.startswith("win") else "clear")
+    clear_terminal()
     print_header(name)
     print(f"Welcome back {name}, type 'help' for more information.\n")
     repl(name)

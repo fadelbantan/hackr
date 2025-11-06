@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import re, sys, time, random, string
 from alive_progress import alive_bar
 
@@ -38,7 +36,7 @@ def _random_phone():
 
 def _random_email_from_name(name):
     local = re.sub(r"\s+", ".", name.strip().lower())
-    domain = random.choice(["mail.com","inbox.com","services.net","hotmail.co"])
+    domain = random.choice(["mail.com","outlook.uk.co","icloud.com","hotmail.co"])
     return f"{local}.{random.randint(1,999)}@{domain}"
 
 # Main function
