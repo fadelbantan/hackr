@@ -1,6 +1,8 @@
 import os, sys, time, random, string, threading, re, runpy
 from alive_progress import alive_bar
 
+TYPEWRITER_SPEED = 0.005
+
 # simple regex validator
 def _is_valid_target(t):
     if not t:
@@ -28,7 +30,7 @@ def _random_pass(length=10):
     return "".join(random.choice(chars) for _ in range(length))
 
 # typewriter used for script lines
-def _typewriter(text, speed=0.03): 
+def _typewriter(text, speed=TYPEWRITER_SPEED): 
     for ch in str(text):
         sys.stdout.write(ch)
         sys.stdout.flush()
@@ -100,7 +102,7 @@ def website_cmd(target: str = None):
         "[util] fingerprint_server --aggressive"
     ]
     for ln in script_lines:
-        _typewriter(ln, speed=0.04)
+        _typewriter(ln, speed=TYPEWRITER_SPEED)
         time.sleep(random.uniform(0.05, 0.15))
 
     # Load fake DBs from external file and show a small preview

@@ -1,6 +1,7 @@
 import time, sys, random, string
 from alive_progress import alive_bar
 
+TYPEWRITER_SPEED = 0.005
 
 def _random_password(length=10):
     chars = string.ascii_letters + string.digits
@@ -51,7 +52,7 @@ def socials_cmd(username=None):
     time.sleep(0.7)
 
     # local typewriter function
-    def _typewriter(text, speed=0.04):
+    def _typewriter(text, speed=TYPEWRITER_SPEED):
         for ch in str(text):
             sys.stdout.write(ch)
             sys.stdout.flush()
@@ -80,7 +81,7 @@ def socials_cmd(username=None):
 
     # print each line with typewriter function
     for ln in lines:
-        _typewriter(ln, speed=0.04)
+        _typewriter(ln, speed=TYPEWRITER_SPEED)
         time.sleep(random.uniform(0.08, 0.18))
     time.sleep(0.6)
 
@@ -97,10 +98,4 @@ def socials_cmd(username=None):
     time.sleep(0.8)
 
     # prompt what to do next
-    while True:
-        choice = input("\nWould you like to execute another attack? [y/n]: ").strip().lower()
-        if not choice or choice[0] == 'y':
-            return None    # go back to REPL (main)
-        if choice[0] == 'n':
-            return "exit"  # signal REPL to exit
-        print("Please enter 'y' for another attack or 'n' to exit.")
+    return {"username": username, "email": email, "password": password}

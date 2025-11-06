@@ -1,6 +1,8 @@
 import re, sys, time, random, string
 from alive_progress import alive_bar
 
+TYPEWRITER_SPEED = 0.005
+
 _common_passwords = [
     "passwordpassword", "123456", "mypuppymaxwell", "letmein", "iloveyou",
     "admin", "welcome", "lovely", "passw0rd", "summer2021"
@@ -10,7 +12,7 @@ def _random_password(length=10):
     chars = string.ascii_letters + string.digits
     return "".join(random.choice(chars) for _ in range(length))
 
-def _typewriter(text, speed=0.025):
+def _typewriter(text, speed=TYPEWRITER_SPEED):
     for ch in str(text):
         sys.stdout.write(ch)
         sys.stdout.flush()
@@ -117,7 +119,7 @@ def osint_cmd(mode: str = None, value: str = None):
         "[osint] enrich_contact --geo,meta,phone"
     ]
     for ln in script_lines:
-        _typewriter(ln, speed=0.03)
+        _typewriter(ln, speed=TYPEWRITER_SPEED)
         time.sleep(random.uniform(0.06, 0.18))
 
     time.sleep(0.25)
@@ -144,7 +146,7 @@ def osint_cmd(mode: str = None, value: str = None):
     gen_pw = _random_password(10)
 
     # final reveal
-    _typewriter("\n[+] OSINT snapshot obtained\n", speed=0.02)
+    _typewriter("\n[+] OSINT snapshot obtained\n", speed=TYPEWRITER_SPEED)
     time.sleep(0.12)
 
     print("Name     :", name)
@@ -153,12 +155,12 @@ def osint_cmd(mode: str = None, value: str = None):
     print("Address  :", address)
     print()
 
-    _typewriter("Common passwords found (top matches):", speed=0.02)
+    _typewriter("Common passwords found (top matches):", speed=TYPEWRITER_SPEED)
     for p in common_pw:
-        _typewriter(f" - {p}", speed=0.02)
+        _typewriter(f" - {p}", speed=TYPEWRITER_SPEED)
         time.sleep(0.08)
 
-    _typewriter(f"\nGenerated plausible password: {gen_pw}\n", speed=0.02)
+    _typewriter(f"\nGenerated plausible password: {gen_pw}\n", speed=TYPEWRITER_SPEED)
 
     # small wrap delay then return results
     time.sleep(0.6)
