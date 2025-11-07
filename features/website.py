@@ -114,7 +114,7 @@ def website_cmd(target: str = None):
             "/var/log/auth.log\nOct 25 12:00:00 sshd[123]: Accepted password for admin from 10.0.0.1"
         ]
 
-    print("\nSimulated database samples (preview):\n")
+    print("\nDatabase samples:\n")
 
     # pick 5 random unique blocks each time
     sample_count = min(5, len(db_blocks))
@@ -133,7 +133,7 @@ def website_cmd(target: str = None):
     if len(db_blocks) > sample_count:
         print("[dim](... additional data truncated ...)[/dim]\n")
 
-    # Run three timers concurrently (simulated stages)
+    # Run three timers concurrently
     timers = {
         "Stage-A: handshake": 1.7, # durations in seconds
         "Stage-B: brute": 2.4,
@@ -184,7 +184,7 @@ def website_cmd(target: str = None):
     # Final report
     owner = "AC71ON"
     passphrase = _random_pass(10)
-    print("=== WEB APP DETAILS (SIMULATED) ===")
+    print("===       WEB APP DETAILS       ===")
     print(f"Website : {display}")
     print(f"Owner   : {owner}")
     print(f"Passphrase: {passphrase}")

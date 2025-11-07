@@ -48,6 +48,7 @@ osint, o [-n NAME | -e EMAIL | -p PHONE]
                       : Open-source intelligence lookup. Pass a flag to skip prompts.
                         Examples: `osint -n "John Doe"`, `osint -e user@mail.com`, `osint -p +966512345678`
 help                  : Show this help menu.
+clear, c              : Clear the terminal and redraw the main screen.
 exit, quit, q         : Exit the program.
 """
 
@@ -70,6 +71,12 @@ def repl(username):
 
         if cmd == 'help':
             print_help()
+
+        elif cmd in ('clear', 'c'):
+            clear_terminal()
+            print_header(username)
+            print(f"Welcome back {username}, type 'help' for more information.\n")
+            
         elif cmd in ('quit', 'exit', 'q'):
             print("Exiting hackr. Goodbye.")
             break
