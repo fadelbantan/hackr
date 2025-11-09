@@ -29,7 +29,7 @@ def _valid_phone(p):
     return 7 <= len(digits) <= 15
 
 def _random_address():
-    streets = ["Price Sultan Rd.", "Heraa St.", "Al Amal", "King Rd.", "An Nuzhah Ds.", "1st St.", "Industrial Pkwy"]
+    streets = ["Price Sultan Rd", "Heraa St", "Al Amal", "King Rd", "An Nuzhah Ds", "1st St", "Industrial Village"]
     cities = ["Jeddah", "Al Khobar", "Dammam", "Riyadh", "Medina"]
     return f"{random.randint(10,999)} {random.choice(streets)}, {random.choice(cities)}, Saudi Arabia"
 
@@ -110,14 +110,51 @@ def osint_cmd(mode: str = None, value: str = None):
             bar()
     time.sleep(0.2)
 
-    # simulated execution lines
-    script_lines = [
-        f"[osint] resolve_aliases --input {value}",
-        "[osint] enumerate_profiles --depth 3",
-        "[osint] search_breaches --match-variants",
-        "[osint] correlate-cross-platform --score-threshold 0.6",
-        "[osint] enrich_contact --geo,meta,phone"
-    ]
+    # execution lines
+    TYPEWRITER_SPEED = globals().get("TYPEWRITER_SPEED", 0.03)
+
+    if mode == "email":
+        script_lines = [
+            f"[osint] querying public data sources for '{value}'",
+            "[osint] MX / SPF / DKIM and domain reputation check",
+            "[osint] TLS certificate and crt.sh / CAA lookup",
+            "[osint] searching breach DBs (HaveIBeenPwned, DeHashed, compiled leaks)",
+            "[osint] indexing paste sites, archived dumps and Google cache",
+            "[osint] harvesting linked accounts and account reuse patterns",
+            "[osint] checking role vs personal address and inbox exposure",
+            "[osint] extracting headers and SMTP fingerprinting where available",
+            "[osint] assessing risk score (exposure, reuse, domain age)",
+            "[osint] compiling email-centric intelligence summary"
+        ]
+
+    elif mode == "phone":
+        script_lines = [
+            f"[osint] querying public data sources for '{value}'",
+            "[osint] E.164 normalization and libphonenumber carrier lookup",
+            "[osint] identifying number type (mobile / landline / VOIP)",
+            "[osint] reverse-lookup on public directories and Truecaller-style sources",
+            "[osint] searching paste sites and leaked SMS/OTP archives",
+            "[osint] checking ad-broker records and classifieds for posted numbers",
+            "[osint] correlating number to social profiles and message handles",
+            "[osint] geolocation heuristics from national prefix and exchange",
+            "[osint] number reputation / spam-scoring lookup",
+            "[osint] compiling phone-centric intelligence summary"
+        ]
+
+    else:  # name
+        script_lines = [
+            f"[osint] querying public data sources for '{value}'",
+            "[osint] scraping social profiles and metadata (Instagram, LinkedIn, X, Facebook, GitHub)",
+            "[osint] harvesting known usernames/aliases and cross-posts",
+            "[osint] extracting media EXIF, image hashes (pHash) and geotags via exiftool",
+            "[osint] searching breach collections, paste sites and indexed archives",
+            "[osint] performing Google dorking and cached page analysis",
+            "[osint] enumerating related domains, blogs and personal pages",
+            "[osint] mapping social graph and follower/following connections",
+            "[osint] checking code repos and public commits for secrets or tokens",
+            "[osint] compiling person-centric intelligence report"
+        ]
+
     for ln in script_lines:
         _typewriter(ln, speed=TYPEWRITER_SPEED)
         time.sleep(random.uniform(0.06, 0.18))

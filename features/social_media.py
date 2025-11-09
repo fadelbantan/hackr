@@ -43,7 +43,7 @@ def socials_cmd(username=None):
         return
     
     # Executing timer
-    print("\nExecuting...\n")
+    print("\nExecuting exploits...\n")
     with alive_bar(80) as bar:
         for _ in range(80):
             time.sleep(0.045)
@@ -60,23 +60,20 @@ def socials_cmd(username=None):
         sys.stdout.write("\n")
         sys.stdout.flush()
 
-    # dummy script lines 
+    # execution lines 
     lines = [
-        f"[payload] prepare_profile_enum --target {username}",
-        "[script] exploit_fingerprints --mode quick",
-        "[script] harvest_public_posts --limit 50",
-        "[util] collect_metadata --format json",
-        "[payload] enumerate_connections --depth 2",
-        "[analyze] sentiment_pipeline --batch 1",
-        "[probe] open_ports --fast-scan",
-        "[decode] media_cache --extract-metadata",
-        "[chain] build_graph --min-score 0.7",
-        "[search] leaked_credentials --source dark-web",
-        "[brute] candidate_passwords --threads 8",
-        "[merge] results --dedupe",
-        "[persist] store_cache --encrypted",
-        "[notify] alert_engine --level low",
-        "[cleanup] shred_temp_files --passes 1"
+        f"[socials] enumerating public profiles for @{username} (X, Instagram, Facebook, LinkedIn, GitHub)",
+        "[socials] scraping profile metadata (bio, links, location, join date)",
+        "[socials] harvesting recent public posts, replies and media (limit 50)",
+        "[socials] extracting media metadata and EXIF via exiftool",
+        "[socials] reverse-image checks (TinEye, Google Images) for cross-postings",
+        "[socials] checking archived snapshots (Wayback, CommonCrawl) for deleted content",
+        "[socials] indexing paste/archive mentions (Pastebin, GhostProject, archived dumps)",
+        "[socials] resolving linked accounts and email hints (Hunter.io-style discovery)",
+        "[socials] searching public code repos and CI logs for exposed tokens (GitHub, GitLab)",
+        "[socials] mapping social graph and follower/connections clusters (Maltego/Graph style)",
+        "[socials] checking third-party indexers and OSINT tools (SpiderFoot, theHarvester) for leads",
+        "[socials] compiling concise social-profile intelligence report and exposure score"
     ]
 
     # print each line with typewriter function

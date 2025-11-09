@@ -93,14 +93,23 @@ def website_cmd(target: str = None):
             bar()
     print()
 
-    # Run a few script lines using typewriter
+    # realistic, non-actionable website reconnaissance steps (12 lines)
+    TYPEWRITER_SPEED = globals().get("TYPEWRITER_SPEED", 0.005)
     script_lines = [
-        f"[payload] prepare_probe --target {display}",
-        "[script] exploit_fingerprints --mode quick",
-        "[script] harvest_public_posts --limit 40",
-        "[payload] enumerate_endpoints --depth 3",
-        "[util] fingerprint_server --aggressive"
+        f"[recon] passive DNS & WHOIS lookup for {display} (VirusTotal / DNSDumpster)",
+        "[recon] certificate transparency & crt.sh history (SANs, issuer, expiry)",
+        "[recon] TLS configuration audit (SSL Labs / certinfo) and cipher analysis",
+        "[recon] service banner collection and fingerprinting (Shodan / Censys references)",
+        "[recon] technology fingerprinting (Wappalyzer / BuiltWith) and server headers",
+        "[recon] fetch robots.txt and sitemap.xml; enumerate visible endpoints",
+        "[recon] archive lookups (Wayback Machine, CommonCrawl) for historical content",
+        "[recon] crawl public pages for exposed secrets or misconfigurations (non-invasive)",
+        "[recon] search public code repositories and CI logs for leaked keys (GitHub search)",
+        "[recon] check cloud buckets and exposed storage indexes (public S3 / GCS listings)",
+        "[recon] check software versions and cross-reference known CVEs (CPE/CVE lookup)",
+        "[recon] compile web-app reconnaissance report and exposure / remediation notes"
     ]
+
     for ln in script_lines:
         _typewriter(ln, speed=TYPEWRITER_SPEED)
         time.sleep(random.uniform(0.05, 0.15))
