@@ -1,4 +1,4 @@
-import os, sys, time, random, string, threading, re, runpy
+import os, sys, time, random, string, re, runpy
 from alive_progress import alive_bar
 
 TYPEWRITER_SPEED = 0.005
@@ -12,8 +12,7 @@ def _is_valid_target(t):
     return re.match(pattern, t) is not None
 
 # load database blocks from data/databases.py
-def load_databases(path="data/databases.py"):
-    """Import DATABASES from a Python file."""
+def load_databases(path="data/databases.py"):    
     if not os.path.exists(path):
         return []
     try:
@@ -29,7 +28,12 @@ def _random_pass(length=10):
     chars = string.ascii_lowercase + string.digits
     return "".join(random.choice(chars) for _ in range(length))
 
-# typewriter used for script lines
+def _random_owner():
+    first = ["Helios", "Orion", "Axiom", "Nova", "Cipher", "Atlas", "Vertex"]
+    last = ["Ops", "Guard", "Labs", "Security", "Core", "Systems", "Grid"]
+    return random.choice(first) + random.choice(last)
+
+# local typewriter function
 def _typewriter(text, speed=TYPEWRITER_SPEED): 
     for ch in str(text):
         sys.stdout.write(ch)
@@ -38,29 +42,15 @@ def _typewriter(text, speed=TYPEWRITER_SPEED):
     sys.stdout.write("\n")
     sys.stdout.flush()
 
-# concurrency helpers for 3 timers
-def _timer_worker(name, duration, state_dict):
-    """Worker that sleeps and updates a state dict percent over time."""
-    start = time.perf_counter()
-    while True:
-        elapsed = time.perf_counter() - start
-        pct = min(100, int((elapsed / max(0.0001, duration)) * 100))
-        state_dict[name] = pct
-        if pct >= 100:
-            break
-        time.sleep(0.05)
-    state_dict[name] = 100
-
 # main command
 def website_cmd(target: str = None):
-    # Initialization before asking for target (when not omitted)
+    # Initialization progress bar 
     print("\nInitializing...\n")
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.025)
             bar()
     print()
-
 
     # Prompt for target if not omitted
     while True:
@@ -76,7 +66,6 @@ def website_cmd(target: str = None):
             print("Target looks invalid. Expected domain or URL.\n")
             target = None
             continue
-
         # valid input, exit loop
         break
 
@@ -85,29 +74,36 @@ def website_cmd(target: str = None):
     if display.startswith("http://") or display.startswith("https://"):
         display = display.split("://", 1)[1].rstrip("/")
 
-    # Gathering information timer
+    # Gathering information timer with multi-phase indicators
     print(f"\nGathering information on {target}\n")
-    with alive_bar(100) as bar:
-        for _ in range(100):
-            time.sleep(0.040)
-            bar()
+    recon_phases = [
+        ("dns sweep", 90, 0.03),
+        ("cert telemetry", 70, 0.04),
+        ("service census", 80, 0.035),
+        ("exposure diff", 85, 0.032),
+    ]
+    for title, total, delay in recon_phases:
+        with alive_bar(total, title=f"{title:<16}") as bar:
+            for _ in range(total):
+                time.sleep(delay)
+                bar()
     print()
 
-    # realistic, non-actionable website reconnaissance steps (12 lines)
-    TYPEWRITER_SPEED = globals().get("TYPEWRITER_SPEED", 0.005)
+    # execution lines
     script_lines = [
-        f"[recon] passive DNS & WHOIS lookup for {display} (VirusTotal / DNSDumpster)",
-        "[recon] certificate transparency & crt.sh history (SANs, issuer, expiry)",
-        "[recon] TLS configuration audit (SSL Labs / certinfo) and cipher analysis",
-        "[recon] service banner collection and fingerprinting (Shodan / Censys references)",
-        "[recon] technology fingerprinting (Wappalyzer / BuiltWith) and server headers",
-        "[recon] fetch robots.txt and sitemap.xml; enumerate visible endpoints",
-        "[recon] archive lookups (Wayback Machine, CommonCrawl) for historical content",
-        "[recon] crawl public pages for exposed secrets or misconfigurations (non-invasive)",
-        "[recon] search public code repositories and CI logs for leaked keys (GitHub search)",
-        "[recon] check cloud buckets and exposed storage indexes (public S3 / GCS listings)",
-        "[recon] check software versions and cross-reference known CVEs (CPE/CVE lookup)",
-        "[recon] compile web-app reconnaissance report and exposure / remediation notes"
+        f"[dns] passive DNS / WHOIS sweep on {display} (RiskIQ, SecurityTrails mirrors)",
+        "[cert] certificate transparency delta via crt.sh and Google CT (SAN churn, issuers)",
+        "[tls] handshake capture and cipher/cert audit (SSL Labs style scoring)",
+        "[services] banner harvesting and fingerprinting from cached Shodan/Censys hits",
+        "[tech] stack fingerprint (Wappalyzer/BuiltWith signatures, response headers)",
+        "[crawl] parse robots.txt + sitemap.xml; seed crawl queue with exposed paths",
+        "[archive] diff Wayback/CommonCrawl snapshots for removed directories and files",
+        "[content] shallow crawl for config leaks, .env/.git remnants, backup artifacts",
+        f"[code] hunt {display} references in public repos/CI logs for leaked tokens",
+        "[storage] probe public S3/GCS/Azure listings tied to discovered subdomains",
+        "[vuln] normalize software versions and cross-reference CVEs (NVD/CPE lookup)",
+        "[intel] correlate breach corpora for shared emails, subdomains, SSL subjects",
+        "[report] compile recon dossier with exposure score + remediation checklist"
     ]
 
     for ln in script_lines:
@@ -120,7 +116,6 @@ def website_cmd(target: str = None):
         db_blocks = [
             "/etc/passwd\nroot:x:0:0:root:/root:/bin/bash\nuser:x:1000:1000:User:/home/user:/bin/bash",
             "/home/admin/notes.txt\nAPI_KEY=abcd-efgh-ijkl\npassword_hint=summer2021",
-            "/var/log/auth.log\nOct 25 12:00:00 sshd[123]: Accepted password for admin from 10.0.0.1"
         ]
 
     print("\nDatabase samples:\n")
@@ -132,7 +127,7 @@ def website_cmd(target: str = None):
     for block in selected_blocks:
         block = block.strip()
         for j, line in enumerate(block.splitlines()):
-            if j >= 6:
+            if j >= 8:
                 print("... (truncated) ...")
                 break
             print(line)
@@ -142,61 +137,42 @@ def website_cmd(target: str = None):
     if len(db_blocks) > sample_count:
         print("[dim](... additional data truncated ...)[/dim]\n")
 
-    # Run three timers concurrently
-    timers = {
-        "Stage-A: handshake": 1.7, # durations in seconds
-        "Stage-B: brute": 2.4,
-        "Stage-C: assemble": 2.6
-    }
-    state = {name: 0 for name in timers.keys()}
-    threads = []
-    for name, dur in timers.items():
-        t = threading.Thread(target=_timer_worker, args=(name, dur, state), daemon=True)
-        threads.append(t)
-        t.start()
+    # Run staged progress bars
+    stage_phases = [
+        ("surface mapping", 94, 0.03),
+        ("endpoint fuzzing", 69, 0.04),
+        ("artifact assembly", 83, 0.035),
+    ]
+    print("Running concurrent stages (simulated):\n")
+    for title, total, delay in stage_phases:
+        with alive_bar(total, title=f"{title:<18}") as bar:
+            for _ in range(total):
+                time.sleep(delay)
+                bar()
+    print()
 
-    # Display live textual progress for the three timers (main thread polls)
-    print("Running concurrent stages:\n")
-    try:
-        while True:
-            # render status lines
-            lines = []
-            done = True
-            for name in timers.keys():
-                pct = state.get(name, 0)
-                lines.append(f"{name:20s} [{pct:3d}%]")
-                if pct < 100:
-                    done = False
-            print("\r" + "   ".join(lines), end="")
-            if done:
-                break
-            time.sleep(0.12)
-        print()
-    except KeyboardInterrupt:
-        print("\nInterrupted concurrent stages.")
-
-    # short finalization (download + decrypt imitation)
-    print("\nDownloading Hacked DataBase from", target)
+    # short finalization progress bar
+    print("\nDownloading hacked database from", target)
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.045)
             bar()
     print()
 
-    print("Decrypting Downloaded Data...")
+    print("Decrypting downloaded data...")
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.024)
             bar()
-    print("\n[+] Decryption Successful\n")
+    print("\n[+] Decryption successful\n")
 
     # Final report
-    owner = "AC71ON"
+    owner = _random_owner()
     passphrase = _random_pass(10)
-    print("===       WEB APP DETAILS       ===")
-    print(f"Website : {display}")
-    print(f"Owner   : {owner}")
-    print(f"Passphrase: {passphrase}")
+    print("======    WEB APP DETAILS    ======")
+    print(f"Website : {display}")               
+    print(f"Owner   : {owner}")                 
+    print(f"Passphrase: {passphrase}")          
     print("===================================\n")
 
     return {"target": display, "owner": owner, "passphrase": passphrase}
