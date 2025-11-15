@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-import sys, time, os
+import sys, os
 from pyfiglet import Figlet
+from ui import console, DEFAULT_STYLE
 from features.social_media import socials_cmd
 from features.website import website_cmd
 from features.osint import osint_cmd
@@ -20,9 +21,9 @@ def clear_terminal():
 # Main Header using Figlet library
 def print_header():
     f = Figlet(font="ansi_shadow")
-    print("\n" + f.renderText(" hackr"))
+    console.print("\n" + f.renderText(" hackr"), style="bold bright_green")
 
-# Help menu
+# Help menu
 def print_help():
     help_text = f"""
 \033[1mhackr\033[0m
@@ -46,14 +47,14 @@ clear, c              : Clear the terminal and redraw the main screen.
 
 exit, quit, q         : Exit the program.
 """
-    print(help_text)
+    console.print(help_text)
 
 # Read-Eval-Print Loop
 def repl(username):
-    prompt = f"hackr@{username} $ "
-    print()
+    prompt = f"[bold red]{username}@hackr[/bold red] $ [{DEFAULT_STYLE}]"
+    console.print()
     while True:
-        line = input(prompt).strip()
+        line = console.input(prompt).strip()
         # If enter is pressed without any input, start loop again
         if not line:
             continue
@@ -69,16 +70,16 @@ def repl(username):
         elif cmd == 'clear' or cmd == 'c':
             clear_terminal()
             print_header()
-            print(f"Welcome back {username}, type 'help' for more information.\n")
+            console.print(f"Welcome back {username}, type 'help' for more information.\n")
 
         elif cmd == "quit" or cmd == "exit" or cmd == "q":
-            print("Exiting hackr. Goodbye.")
+            console.print("Exiting hackr. Goodbye.")
             break
 
         elif cmd == "socials" or cmd == "s":
             arg = cmd_parts[1] if len(cmd_parts) > 1 else None
             if arg is not None and len(arg) < 3:
-                print("Error: username must be at least 3 characters.")
+                console.print("Error: username must be at least 3 characters.")
                 continue
             socials_cmd(arg)
 
@@ -92,14 +93,14 @@ def repl(username):
             osint_cmd(mode=None, value=arg)
 
         else:
-            print(f"[pending] Command '{cmd}' awaiting implementation.")
+            console.print(f"[pending] Command '{cmd}' awaiting implementation.")
 
 
 def main():
-    name = input("Enter username: ").strip() or "user"
+    name = console.input("Enter username: ").strip() or "root"
     clear_terminal()
     print_header()
-    print(f"Welcome back {name}, type 'help' for more information.\n")
+    console.print(f"Welcome back {name}, type 'help' for more information.\n")
     repl(name)
 
 if __name__ == "__main__":

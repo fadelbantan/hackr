@@ -1,5 +1,6 @@
-import os, sys, time, random, string, re, runpy
+import os, time, random, string, re, runpy
 from alive_progress import alive_bar
+from ui import console, typewriter
 
 TYPEWRITER_SPEED = 0.005
 
@@ -20,7 +21,7 @@ def load_databases(path="data/databases.py"):
         dbs = mod.get("DATABASES", [])
         return [str(x).strip() for x in dbs if x]
     except Exception as e:
-        print(f"[!] Could not load databases: {e}")
+        console.print(f"[!] Could not load databases: {e}")
         return []
 
 # random pass generator
@@ -33,37 +34,28 @@ def _random_owner():
     last = ["Ops", "Guard", "Labs", "Security", "Core", "Systems", "Grid"]
     return random.choice(first) + random.choice(last)
 
-# local typewriter function
-def _typewriter(text, speed=TYPEWRITER_SPEED): 
-    for ch in str(text):
-        sys.stdout.write(ch)
-        sys.stdout.flush()
-        time.sleep(speed)
-    sys.stdout.write("\n")
-    sys.stdout.flush()
-
 # main command
 def website_cmd(target: str = None):
     # Initialization progress bar 
-    print("\nInitializing...\n")
+    console.print("\nInitializing...\n")
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.025)
             bar()
-    print()
+    console.print()
 
     # Prompt for target if not omitted
     while True:
         if not target:
-            target = input("Enter website or domain (e.g. example.com): ").strip()
+            target = console.input("Enter website or domain (e.g. example.com): ").strip()
 
         if not target:
-            print("No target provided. Try again.\n")
+            console.print("No target provided. Try again.\n")
             target = None
             continue
 
         if not _is_valid_target(target):
-            print("Target looks invalid. Expected domain or URL.\n")
+            console.print("Target looks invalid. Expected domain or URL.\n")
             target = None
             continue
         # valid input, exit loop
@@ -75,7 +67,7 @@ def website_cmd(target: str = None):
         display = display.split("://", 1)[1].rstrip("/")
 
     # Gathering information timer with multi-phase indicators
-    print(f"\nGathering information on {target}\n")
+    console.print(f"\nGathering information on {target}\n")
     recon_phases = [
         ("dns sweep", 90, 0.03),
         ("cert telemetry", 70, 0.04),
@@ -87,27 +79,28 @@ def website_cmd(target: str = None):
             for _ in range(total):
                 time.sleep(delay)
                 bar()
-    print()
+    console.print()
 
     # execution lines
     script_lines = [
-        f"[dns] passive DNS / WHOIS sweep on {display} (RiskIQ, SecurityTrails mirrors)",
-        "[cert] certificate transparency delta via crt.sh and Google CT (SAN churn, issuers)",
-        "[tls] handshake capture and cipher/cert audit (SSL Labs style scoring)",
-        "[services] banner harvesting and fingerprinting from cached Shodan/Censys hits",
-        "[tech] stack fingerprint (Wappalyzer/BuiltWith signatures, response headers)",
-        "[crawl] parse robots.txt + sitemap.xml; seed crawl queue with exposed paths",
-        "[archive] diff Wayback/CommonCrawl snapshots for removed directories and files",
-        "[content] shallow crawl for config leaks, .env/.git remnants, backup artifacts",
-        f"[code] hunt {display} references in public repos/CI logs for leaked tokens",
-        "[storage] probe public S3/GCS/Azure listings tied to discovered subdomains",
-        "[vuln] normalize software versions and cross-reference CVEs (NVD/CPE lookup)",
-        "[intel] correlate breach corpora for shared emails, subdomains, SSL subjects",
-        "[report] compile recon dossier with exposure score + remediation checklist"
+        ("[dns]", f"passive DNS / WHOIS sweep on {display} (RiskIQ, SecurityTrails mirrors)"),
+        ("[cert]", "certificate transparency delta via crt.sh and Google CT (SAN churn, issuers)"),
+        ("[tls]", "handshake capture and cipher/cert audit (SSL Labs style scoring)"),
+        ("[services]", "banner harvesting and fingerprinting from cached Shodan/Censys hits"),
+        ("[tech]", "stack fingerprint (Wappalyzer/BuiltWith signatures, response headers)"),
+        ("[crawl]", "parse robots.txt + sitemap.xml; seed crawl queue with exposed paths"),
+        ("[archive]", "diff Wayback/CommonCrawl snapshots for removed directories and files"),
+        ("[content]", "shallow crawl for config leaks, .env/.git remnants, backup artifacts"),
+        ("[code]", f"hunt {display} references in public repos/CI logs for leaked tokens"),
+        ("[storage]", "probe public S3/GCS/Azure listings tied to discovered subdomains"),
+        ("[vuln]", "normalize software versions and cross-reference CVEs (NVD/CPE lookup)"),
+        ("[intel]", "correlate breach corpora for shared emails, subdomains, SSL subjects"),
+        ("[report]", "compile recon dossier with exposure score + remediation checklist"),
     ]
 
-    for ln in script_lines:
-        _typewriter(ln, speed=TYPEWRITER_SPEED)
+    for stub, text in script_lines:
+        console.print(stub, style="bold red", end=" ", markup=False)
+        typewriter(text, speed=TYPEWRITER_SPEED)
         time.sleep(random.uniform(0.05, 0.15))
 
     # Load fake DBs from external file and show a small preview
@@ -118,7 +111,7 @@ def website_cmd(target: str = None):
             "/home/admin/notes.txt\nAPI_KEY=abcd-efgh-ijkl\npassword_hint=summer2021",
         ]
 
-    print("\nDatabase samples:\n")
+    console.print("\nDatabase samples:\n")
 
     # pick 5 random unique blocks each time
     sample_count = min(5, len(db_blocks))
@@ -127,15 +120,15 @@ def website_cmd(target: str = None):
     for block in selected_blocks:
         block = block.strip()
         for j, line in enumerate(block.splitlines()):
-            if j >= 8:
-                print("... (truncated) ...")
+            if j >= 10:
+                console.print("... (truncated) ...")
                 break
-            print(line)
-        print()
+            console.print(line, markup=False)
+        console.print()
         time.sleep(1)
 
     if len(db_blocks) > sample_count:
-        print("[dim](... additional data truncated ...)[/dim]\n")
+        console.print("[dim](... additional data truncated ...)[/dim]\n", markup=True)
 
     # Run staged progress bars
     stage_phases = [
@@ -143,36 +136,36 @@ def website_cmd(target: str = None):
         ("endpoint fuzzing", 69, 0.04),
         ("artifact assembly", 83, 0.035),
     ]
-    print("Running concurrent stages (simulated):\n")
+    console.print("Running concurrent stages (simulated):\n")
     for title, total, delay in stage_phases:
         with alive_bar(total, title=f"{title:<18}") as bar:
             for _ in range(total):
                 time.sleep(delay)
                 bar()
-    print()
+    console.print()
 
     # short finalization progress bar
-    print("\nDownloading hacked database from", target)
+    console.print("\nDownloading hacked database from", target)
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.045)
             bar()
-    print()
+    console.print()
 
-    print("Decrypting downloaded data...")
+    console.print("Decrypting downloaded data...")
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.024)
             bar()
-    print("\n[+] Decryption successful\n")
+    console.print("\n[+] Decryption successful\n")
 
     # Final report
     owner = _random_owner()
     passphrase = _random_pass(10)
-    print("======    WEB APP DETAILS    ======")
-    print(f"Website : {display}")               
-    print(f"Owner   : {owner}")                 
-    print(f"Passphrase: {passphrase}")          
-    print("===================================\n")
+    console.print("======    WEB APP DETAILS    ======")
+    console.print(f"Website : {display}")               
+    console.print(f"Owner   : {owner}")                 
+    console.print(f"Passphrase: {passphrase}")          
+    console.print("===================================\n")
 
     return {"target": display, "owner": owner, "passphrase": passphrase}

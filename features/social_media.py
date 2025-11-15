@@ -1,5 +1,6 @@
-import time, sys, random, string
+import time, random, string
 from alive_progress import alive_bar
+from ui import console, typewriter
 
 TYPEWRITER_SPEED = 0.005
 
@@ -12,54 +13,44 @@ def socials_cmd(username=None):
     if username is not None:
         username = username.strip()
         if len(username) < 3:
-            print("Error: username must be at least 3 characters.")
+            console.print("Error: username must be at least 3 characters.")
             return None
     else:
         # prompt for username until it's valid
         while True:
-            username = input("Enter username to hack: ").strip()
+            username = console.input("Enter username to hack: ").strip()
             if not username:
-                print("Please enter a username (minimum 3 characters).")
+                console.print("Please enter a username (minimum 3 characters).")
                 continue
             if len(username) < 3:
-                print("Username must be at least 3 characters.")
+                console.print("Username must be at least 3 characters.")
                 continue
             break  # when a valid username is received
 
     # Initialization progress bar
-    print("\nInitializing...\n")
+    console.print("\nInitializing...\n")
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.025)
             bar()
-    print()
+    console.print()
     time.sleep(0.8)
 
     # confirmation after receiving username
-    ans = input(f"Is the username @{username} correct? (y/n): ").strip().lower()
+    ans = console.input(f"Is the username @{username} correct? (y/n): ").strip().lower()
     if not ans or ans[0] != "y":
         return socials_cmd()
     
     # Executing timer
-    print("\nExecuting exploits...\n")
+    console.print("\nExecuting exploits...\n")
     with alive_bar(80) as bar:
         for _ in range(80):
             time.sleep(0.065)
             bar()
-    print()
+    console.print()
     time.sleep(0.7)
 
-    # typewriter function
-    def _typewriter(text, speed=TYPEWRITER_SPEED):
-        for char in text:
-            sys.stdout.write(char)
-            sys.stdout.flush()
-            time.sleep(speed)
-        sys.stdout.write("\n")
-        sys.stdout.flush()
-
-
-    _typewriter(f"[socials] enumerating public profiles for @{username} (X, Instagram, Facebook, LinkedIn)\n", speed=TYPEWRITER_SPEED)
+    typewriter(f"[socials] enumerating public profiles for @{username} (X, Instagram, Facebook, LinkedIn)\n", speed=TYPEWRITER_SPEED)
     time.sleep(0.10)
 
     # Alive progress bars for each phase of the sweep
@@ -94,17 +85,17 @@ def socials_cmd(username=None):
 
     # print each line with typewriter function
     for ln in lines:
-        _typewriter(ln, speed=TYPEWRITER_SPEED)
+        typewriter(ln, speed=TYPEWRITER_SPEED)
         time.sleep(random.uniform(0.08, 0.18))
     time.sleep(0.6)
 
     # Final report progress bar
-    print("\n[report] consolidating findings and drafting exposure summary\n")
+    console.print("\n[report] consolidating findings and drafting exposure summary\n")
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.05)
             bar()
-    print()
+    console.print()
     time.sleep(1.3)
 
     # Final report
@@ -112,11 +103,11 @@ def socials_cmd(username=None):
     password = _random_password(10)
     email = f"{username}.{random.randint(1,999)}@{random.choice(domain)}.com"
 
-    print("\n======    HACK REPORT   ======")
-    print(f"Username : {username}")
-    print(f"Email    : {email}")
-    print(f"Password : {password}")
-    print("===============================\n")
+    console.print("\n======    HACK REPORT   ======")
+    console.print(f"Username : {username}")
+    console.print(f"Email    : {email}")
+    console.print(f"Password : {password}")
+    console.print("===============================\n")
     time.sleep(0.8)
 
     # prompt what to do next

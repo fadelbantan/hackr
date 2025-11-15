@@ -1,5 +1,6 @@
-import re, sys, time, random, string
+import re, time, random, string
 from alive_progress import alive_bar
+from ui import console, typewriter
 
 TYPEWRITER_SPEED = 0.005
 
@@ -11,14 +12,6 @@ _common_passwords = [
 def _random_password(length=10):
     chars = string.ascii_letters + string.digits
     return "".join(random.choice(chars) for _ in range(length))
-
-def _typewriter(text, speed=TYPEWRITER_SPEED):
-    for ch in str(text):
-        sys.stdout.write(ch)
-        sys.stdout.flush()
-        time.sleep(speed)
-    sys.stdout.write("\n")
-    sys.stdout.flush()
 
 def _valid_email(e):
     return bool(re.match(r"^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$", e.strip()))
@@ -53,12 +46,12 @@ def osint_cmd(mode: str = None, value: str = None):
     if mode:
         mode = mode.strip().lower()
     while mode not in accepted:
-        mode = input("Search by [name/email/phone] (or 'q' to cancel): ").strip().lower()
+        mode = console.input("Search by [name/email/phone] (or 'q' to cancel): ").strip().lower()
         if mode in ("q", "quit", "exit"):
-            print("Cancelled.")
+            console.print("Cancelled.")
             return None
         if mode not in accepted:
-            print("Please choose one of: name, email, phone.")
+            console.print("Please choose one of: name, email, phone.")
             mode = None
 
     # prompt for value (with validation)
@@ -66,36 +59,36 @@ def osint_cmd(mode: str = None, value: str = None):
         if value:
             value = value.strip()
         else:
-            value = input(f"Enter {mode}: ").strip()
+            value = console.input(f"Enter {mode}: ").strip()
 
         if not value:
-            print("Empty input. Enter a value or 'q' to cancel.")
+            console.print("Empty input. Enter a value or 'q' to cancel.")
             value = None
             continue
 
         if value.lower() in ("q", "quit", "exit"):
-            print("Cancelled.")
+            console.print("Cancelled.")
             return None
 
         if mode == "email" and not _valid_email(value):
-            print("That doesn't look like an email. Try again or 'q' to cancel.")
+            console.print("That doesn't look like an email. Try again or 'q' to cancel.")
             value = None
             continue
 
         if mode == "phone" and not _valid_phone(value):
-            print("Phone looks invalid (need 7-15 digits). Try again or 'q' to cancel.")
+            console.print("Phone looks invalid (need 7-15 digits). Try again or 'q' to cancel.")
             value = None
             continue
 
         if mode == "name" and len(value) < 2:
-            print("Name must be at least 2 characters. Try again or 'q' to cancel.")
+            console.print("Name must be at least 2 characters. Try again or 'q' to cancel.")
             value = None
             continue
 
         break  # valid input
 
     # cinematic initialization
-    print("\nInitializing OSINT modules...\n")
+    console.print("\nInitializing OSINT modules...\n")
     with alive_bar(80) as bar:
         for _ in range(80):
             time.sleep(0.02)
@@ -103,7 +96,7 @@ def osint_cmd(mode: str = None, value: str = None):
     time.sleep(0.25)
 
     # gathering info
-    print(f"\nGathering public traces for {value} ({mode})\n")
+    console.print(f"\nGathering public traces for {value} ({mode})\n")
     with alive_bar(120) as bar:
         for _ in range(120):
             time.sleep(0.02)
@@ -111,7 +104,7 @@ def osint_cmd(mode: str = None, value: str = None):
     time.sleep(0.2)
 
     # execution lines
-    TYPEWRITER_SPEED = globals().get("TYPEWRITER_SPEED", 0.03)
+    tw_speed = 0.03
 
     if mode == "email":
         script_lines = [
@@ -156,7 +149,7 @@ def osint_cmd(mode: str = None, value: str = None):
         ]
 
     for ln in script_lines:
-        _typewriter(ln, speed=TYPEWRITER_SPEED)
+        typewriter(ln, speed=tw_speed)
         time.sleep(random.uniform(0.06, 0.18))
 
     time.sleep(0.25)
@@ -183,21 +176,21 @@ def osint_cmd(mode: str = None, value: str = None):
     gen_pw = _random_password(10)
 
     # final reveal
-    _typewriter("\n[+] OSINT snapshot obtained\n", speed=TYPEWRITER_SPEED)
+    typewriter("\n[+] OSINT snapshot obtained\n", speed=TYPEWRITER_SPEED)
     time.sleep(0.12)
 
-    print("Name     :", name)
-    print("Phone    :", phone)
-    print("Email    :", email)
-    print("Address  :", address)
-    print()
+    console.print("Name     :", name)
+    console.print("Phone    :", phone)
+    console.print("Email    :", email)
+    console.print("Address  :", address)
+    console.print()
 
-    _typewriter("Common passwords found (top matches):", speed=TYPEWRITER_SPEED)
+    typewriter("Common passwords found (top matches):", speed=TYPEWRITER_SPEED)
     for p in common_pw:
-        _typewriter(f" - {p}", speed=TYPEWRITER_SPEED)
+        typewriter(f" - {p}", speed=TYPEWRITER_SPEED)
         time.sleep(0.08)
 
-    _typewriter(f"\nGenerated plausible password: {gen_pw}\n", speed=TYPEWRITER_SPEED)
+    typewriter(f"\nGenerated plausible password: {gen_pw}\n", speed=TYPEWRITER_SPEED)
 
     # small wrap delay then return results
     time.sleep(0.6)
