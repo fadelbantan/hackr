@@ -21,7 +21,7 @@ def clear_terminal():
 # Main Header using Figlet library
 def print_header():
     f = Figlet(font="ansi_shadow")
-    console.print("\n" + f.renderText(" hackr"), style="bold bright_green")
+    console.print("\n" + f.renderText(" hackr"), style="bold green")
 
 # Help menu
 def print_help():
