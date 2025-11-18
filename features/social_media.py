@@ -1,8 +1,17 @@
-import time, random, string
+import time, random, string, sys
 from alive_progress import alive_bar
-from ui import console, typewriter
+from rich.console import Console
 
 TYPEWRITER_SPEED = 0.005
+console = Console(style="green")
+
+def _typewriter(text, speed=TYPEWRITER_SPEED):
+    for char in str(text):
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        time.sleep(speed)
+    sys.stdout.write("\n")
+    sys.stdout.flush()
 
 def _random_password(length=10):
     chars = string.ascii_letters + string.digits
@@ -50,7 +59,9 @@ def socials_cmd(username=None):
     console.print()
     time.sleep(0.7)
 
-    typewriter(f"[socials] enumerating public profiles for @{username} (X, Instagram, Facebook, LinkedIn)\n", speed=TYPEWRITER_SPEED)
+    console.print()
+    console.print("[socials]", style="bold red", end=" ", markup=False)
+    _typewriter(f"enumerating public profiles for @{username} (X, Instagram, Facebook, LinkedIn)", speed=TYPEWRITER_SPEED)
     time.sleep(0.10)
 
     # Alive progress bars for each phase of the sweep
@@ -69,28 +80,30 @@ def socials_cmd(username=None):
     
     # execution lines
     lines = [
-        "\n[network] negotiating TLS context and cipher suite",
-        "[auth] validating session token and cookie parameters",
-        "[proxy] tunneling traffic through edge nodes",
-        "[cache] parsing public media endpoints",
-        "[analysis] correlating request patterns and metadata",
-        "[intel] enumerating public handles across X/IG/FB/LinkedIn directories",
-        "[signals] cloning follower and connection graphs for anomaly scoring",
-        "[metadata] harvesting bio links, geotags, and contact breadcrumbs",
-        "[archive] diffing Wayback/CommonCrawl captures for deleted posts",
-        "[forensics] extracting EXIF/device hints from recent media uploads",
-        "[alerts] cross-referencing breach corpora for matching emails or handles",
-        
+        ("[network]", "negotiating TLS context and cipher suite"),
+        ("[auth]", "validating session token and cookie parameters"),
+        ("[proxy]", "tunneling traffic through edge nodes"),
+        ("[cache]", "parsing public media endpoints"),
+        ("[analysis]", "correlating request patterns and metadata"),
+        ("[intel]", "enumerating public handles across X/IG/FB/LinkedIn directories"),
+        ("[signals]", "cloning follower and connection graphs for anomaly scoring"),
+        ("[metadata]", "harvesting bio links, geotags, and contact breadcrumbs"),
+        ("[archive]", "diffing Wayback/CommonCrawl captures for deleted posts"),
+        ("[forensics]", "extracting EXIF/device hints from recent media uploads"),
+        ("[alerts]", "cross-referencing breach corpora for matching emails or handles"),
     ]
 
-    # print each line with typewriter function
-    for ln in lines:
-        typewriter(ln, speed=TYPEWRITER_SPEED)
+    console.print()
+    for stub, text in lines:
+        console.print(stub, style="bold red", end=" ", markup=False)
+        _typewriter(text, speed=TYPEWRITER_SPEED)
         time.sleep(random.uniform(0.08, 0.18))
     time.sleep(0.6)
 
     # Final report progress bar
-    console.print("\n[report] consolidating findings and drafting exposure summary\n")
+    console.print()
+    console.print("[report]", style="bold red", end=" ", markup=False)
+    _typewriter("consolidating findings and drafting exposure summary", speed=TYPEWRITER_SPEED)
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.05)

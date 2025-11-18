@@ -2,12 +2,14 @@
 
 import sys, os
 from pyfiglet import Figlet
-from ui import console, DEFAULT_STYLE
+from rich.console import Console
 from features.social_media import socials_cmd
 from features.website import website_cmd
 from features.osint import osint_cmd
 
 TYPEWRITER_SPEED = 0.005
+DEFAULT_STYLE = "green"
+console = Console(style=DEFAULT_STYLE)
 
 # Clear terminal function
 def clear_terminal():
@@ -93,7 +95,7 @@ def repl(username):
             osint_cmd(mode=None, value=arg)
 
         else:
-            console.print(f"[pending] Command '{cmd}' awaiting implementation.")
+            console.print(f"[bold red][pending][/bold red] Command '{cmd}' awaiting implementation.", markup=True)
 
 
 def main():

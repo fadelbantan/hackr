@@ -1,8 +1,17 @@
-import os, time, random, string, re, runpy
+import os, time, random, string, re, runpy, sys
 from alive_progress import alive_bar
-from ui import console, typewriter
+from rich.console import Console
 
 TYPEWRITER_SPEED = 0.005
+console = Console(style="green")
+
+def _typewriter(text, speed=TYPEWRITER_SPEED):
+    for char in text:
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        time.sleep(speed)
+    sys.stdout.write("\n")
+    sys.stdout.flush()
 
 # simple regex validator
 def _is_valid_target(t):
@@ -21,7 +30,7 @@ def load_databases(path="data/databases.py"):
         dbs = mod.get("DATABASES", [])
         return [str(x).strip() for x in dbs if x]
     except Exception as e:
-        console.print(f"[!] Could not load databases: {e}")
+        console.print(f"[bold red][!][/bold red] Could not load databases: {e}", markup=True)
         return []
 
 # random pass generator
@@ -69,10 +78,10 @@ def website_cmd(target: str = None):
     # Gathering information timer with multi-phase indicators
     console.print(f"\nGathering information on {target}\n")
     recon_phases = [
-        ("dns sweep", 90, 0.03),
-        ("cert telemetry", 70, 0.04),
-        ("service census", 80, 0.035),
-        ("exposure diff", 85, 0.032),
+        ("dns sweep", 90, 0), # TODO: adjust delays as needed
+        ("cert telemetry", 70, 0),
+        ("service census", 80, 0),
+        ("exposure diff", 85, 0),
     ]
     for title, total, delay in recon_phases:
         with alive_bar(total, title=f"{title:<16}") as bar:
@@ -99,8 +108,8 @@ def website_cmd(target: str = None):
     ]
 
     for stub, text in script_lines:
-        console.print(stub, style="bold red", end=" ", markup=False)
-        typewriter(text, speed=TYPEWRITER_SPEED)
+        console.print(stub, style="red", end=" ", markup=False)
+        _typewriter(text, speed=TYPEWRITER_SPEED)
         time.sleep(random.uniform(0.05, 0.15))
 
     # Load fake DBs from external file and show a small preview
@@ -157,7 +166,9 @@ def website_cmd(target: str = None):
         for _ in range(100):
             time.sleep(0.024)
             bar()
-    console.print("\n[+] Decryption successful\n")
+    console.print()
+    console.print("[+]", style="bold red", end=" ", markup=False)
+    _typewriter("Decryption successful", speed=TYPEWRITER_SPEED)
 
     # Final report
     owner = _random_owner()
