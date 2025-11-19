@@ -2,14 +2,11 @@
 
 import sys, os
 from pyfiglet import Figlet
-from rich.console import Console
 from features.social_media import socials_cmd
 from features.website import website_cmd
 from features.osint import osint_cmd
 
 TYPEWRITER_SPEED = 0.005
-DEFAULT_STYLE = "green"
-console = Console(style=DEFAULT_STYLE)
 
 # Clear terminal function
 def clear_terminal():
@@ -19,12 +16,15 @@ def clear_terminal():
         # Reset terminal state to clear screen
         sys.stdout.write("\033c") # https://en.cppreference.com/w/c/language/ascii.html
         sys.stdout.flush()
+    # Set green as default color
+    sys.stdout.write("\033[32m")
+    sys.stdout.flush()
 
 # Main Header using Figlet library
 def print_header():
     f = Figlet(font="ansi_shadow")
-    console.print("\n" + f.renderText(" hackr"), style="bold green")
-
+    print("\n" + f.renderText(" hackr"))
+    
 # Help menu
 def print_help():
     help_text = f"""
@@ -49,14 +49,16 @@ clear, c              : Clear the terminal and redraw the main screen.
 
 exit, quit, q         : Exit the program.
 """
-    console.print(help_text)
+    print(help_text)
 
 # Read-Eval-Print Loop
 def repl(username):
-    prompt = f"[bold red]{username}@hackr[/bold red] $ [{DEFAULT_STYLE}]"
-    console.print()
+    print()
     while True:
-        line = console.input(prompt).strip()
+        # Red username@hackr, green for rest
+        sys.stdout.write(f"\033[1;31m{username}@hackr\033[0;32m $ ")
+        sys.stdout.flush()
+        line = input().strip()
         # If enter is pressed without any input, start loop again
         if not line:
             continue
@@ -72,16 +74,16 @@ def repl(username):
         elif cmd == 'clear' or cmd == 'c':
             clear_terminal()
             print_header()
-            console.print(f"Welcome back {username}, type 'help' for more information.\n")
+            print(f"Welcome back {username}, type 'help' for more information.\n")
 
         elif cmd == "quit" or cmd == "exit" or cmd == "q":
-            console.print("Exiting hackr. Goodbye.")
+            print("Exiting hackr. Goodbye.")
             break
 
         elif cmd == "socials" or cmd == "s":
             arg = cmd_parts[1] if len(cmd_parts) > 1 else None
             if arg is not None and len(arg) < 3:
-                console.print("Error: username must be at least 3 characters.")
+                print("Error: username must be at least 3 characters.")
                 continue
             socials_cmd(arg)
 
@@ -95,14 +97,18 @@ def repl(username):
             osint_cmd(mode=None, value=arg)
 
         else:
-            console.print(f"[bold red][pending][/bold red] Command '{cmd}' awaiting implementation.", markup=True)
+            sys.stdout.write(f"\033[1;31m[pending]\033[0;32m Command '{cmd}' awaiting implementation.\n")
+            sys.stdout.flush()
 
 
 def main():
-    name = console.input("Enter username: ").strip() or "root"
+    # Set green color before any input
+    sys.stdout.write("\033[32m")
+    sys.stdout.flush()
+    name = input("Enter username: ").strip() or "root"
     clear_terminal()
     print_header()
-    console.print(f"Welcome back {name}, type 'help' for more information.\n")
+    print(f"Welcome back {name}, type 'help' for more information.\n")
     repl(name)
 
 if __name__ == "__main__":

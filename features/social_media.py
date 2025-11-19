@@ -1,9 +1,7 @@
 import time, random, string, sys
 from alive_progress import alive_bar
-from rich.console import Console
 
 TYPEWRITER_SPEED = 0.005
-console = Console(style="green")
 
 def _typewriter(text, speed=TYPEWRITER_SPEED):
     for char in str(text):
@@ -22,45 +20,46 @@ def socials_cmd(username=None):
     if username is not None:
         username = username.strip()
         if len(username) < 3:
-            console.print("Error: username must be at least 3 characters.")
+            print("Error: username must be at least 3 characters.")
             return None
     else:
         # prompt for username until it's valid
         while True:
-            username = console.input("Enter username to hack: ").strip()
+            username = input("Enter username to hack: ").strip()
             if not username:
-                console.print("Please enter a username (minimum 3 characters).")
+                print("Please enter a username (minimum 3 characters).")
                 continue
             if len(username) < 3:
-                console.print("Username must be at least 3 characters.")
+                print("Username must be at least 3 characters.")
                 continue
             break  # when a valid username is received
 
     # Initialization progress bar
-    console.print("\nInitializing...\n")
+    print("\nInitializing...\n")
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.025)
             bar()
-    console.print()
+    print()
     time.sleep(0.8)
 
     # confirmation after receiving username
-    ans = console.input(f"Is the username @{username} correct? (y/n): ").strip().lower()
+    ans = input(f"Is the username @{username} correct? (y/n): ").strip().lower()
     if not ans or ans[0] != "y":
         return socials_cmd()
     
     # Executing timer
-    console.print("\nExecuting exploits...\n")
+    print("\nExecuting exploits...\n")
     with alive_bar(80) as bar:
         for _ in range(80):
             time.sleep(0.065)
             bar()
-    console.print()
+    print()
     time.sleep(0.7)
 
-    console.print()
-    console.print("[socials]", style="bold red", end=" ", markup=False)
+    print()
+    sys.stdout.write("\033[1;31m[socials]\033[0;32m ")
+    sys.stdout.flush()
     _typewriter(f"enumerating public profiles for @{username} (X, Instagram, Facebook, LinkedIn)", speed=TYPEWRITER_SPEED)
     time.sleep(0.10)
 
@@ -93,22 +92,24 @@ def socials_cmd(username=None):
         ("[alerts]", "cross-referencing breach corpora for matching emails or handles"),
     ]
 
-    console.print()
+    print()
     for stub, text in lines:
-        console.print(stub, style="bold red", end=" ", markup=False)
+        sys.stdout.write(f"\033[1;31m{stub}\033[0;32m ")
+        sys.stdout.flush()
         _typewriter(text, speed=TYPEWRITER_SPEED)
         time.sleep(random.uniform(0.08, 0.18))
     time.sleep(0.6)
 
     # Final report progress bar
-    console.print()
-    console.print("[report]", style="bold red", end=" ", markup=False)
+    print()
+    sys.stdout.write("\033[1;31m[report]\033[0;32m ")
+    sys.stdout.flush()
     _typewriter("consolidating findings and drafting exposure summary", speed=TYPEWRITER_SPEED)
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.05)
             bar()
-    console.print()
+    print()
     time.sleep(1.3)
 
     # Final report
@@ -116,11 +117,11 @@ def socials_cmd(username=None):
     password = _random_password(10)
     email = f"{username}.{random.randint(1,999)}@{random.choice(domain)}.com"
 
-    console.print("\n======    HACK REPORT   ======")
-    console.print(f"Username : {username}")
-    console.print(f"Email    : {email}")
-    console.print(f"Password : {password}")
-    console.print("===============================\n")
+    print("\n======    HACK REPORT   ======")
+    print(f"Username : {username}")
+    print(f"Email    : {email}")
+    print(f"Password : {password}")
+    print("===============================\n")
     time.sleep(0.8)
 
     # prompt what to do next

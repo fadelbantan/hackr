@@ -1,9 +1,7 @@
 import os, time, random, string, re, runpy, sys
 from alive_progress import alive_bar
-from rich.console import Console
 
 TYPEWRITER_SPEED = 0.005
-console = Console(style="green")
 
 def _typewriter(text, speed=TYPEWRITER_SPEED):
     for char in text:
@@ -30,7 +28,7 @@ def load_databases(path="data/databases.py"):
         dbs = mod.get("DATABASES", [])
         return [str(x).strip() for x in dbs if x]
     except Exception as e:
-        console.print(f"[bold red][!][/bold red] Could not load databases: {e}", markup=True)
+        print(f"[!] Could not load databases: {e}")
         return []
 
 # random pass generator
@@ -46,25 +44,25 @@ def _random_owner():
 # main command
 def website_cmd(target: str = None):
     # Initialization progress bar 
-    console.print("\nInitializing...\n")
+    print("\nInitializing...\n")
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.025)
             bar()
-    console.print()
+    print()
 
     # Prompt for target if not omitted
     while True:
         if not target:
-            target = console.input("Enter website or domain (e.g. example.com): ").strip()
+            target = input("Enter website or domain (e.g. example.com): ").strip()
 
         if not target:
-            console.print("No target provided. Try again.\n")
+            print("No target provided. Try again.\n")
             target = None
             continue
 
         if not _is_valid_target(target):
-            console.print("Target looks invalid. Expected domain or URL.\n")
+            print("Target looks invalid. Expected domain or URL.\n")
             target = None
             continue
         # valid input, exit loop
@@ -76,7 +74,7 @@ def website_cmd(target: str = None):
         display = display.split("://", 1)[1].rstrip("/")
 
     # Gathering information timer with multi-phase indicators
-    console.print(f"\nGathering information on {target}\n")
+    print(f"\nGathering information on {target}\n")
     recon_phases = [
         ("dns sweep", 90, 0), # TODO: adjust delays as needed
         ("cert telemetry", 70, 0),
@@ -88,7 +86,7 @@ def website_cmd(target: str = None):
             for _ in range(total):
                 time.sleep(delay)
                 bar()
-    console.print()
+        print()
 
     # execution lines
     script_lines = [
@@ -108,7 +106,8 @@ def website_cmd(target: str = None):
     ]
 
     for stub, text in script_lines:
-        console.print(stub, style="red", end=" ", markup=False)
+        sys.stdout.write(f"\033[1;31m{stub}\033[0;32m ")
+        sys.stdout.flush()
         _typewriter(text, speed=TYPEWRITER_SPEED)
         time.sleep(random.uniform(0.05, 0.15))
 
@@ -120,7 +119,7 @@ def website_cmd(target: str = None):
             "/home/admin/notes.txt\nAPI_KEY=abcd-efgh-ijkl\npassword_hint=summer2021",
         ]
 
-    console.print("\nDatabase samples:\n")
+    print("\nDatabase samples:\n")
 
     # pick 5 random unique blocks each time
     sample_count = min(5, len(db_blocks))
@@ -130,53 +129,54 @@ def website_cmd(target: str = None):
         block = block.strip()
         for j, line in enumerate(block.splitlines()):
             if j >= 10:
-                console.print("... (truncated) ...")
+                print("... (truncated) ...")
                 break
-            console.print(line, markup=False)
-        console.print()
+            print(line)
+        print()
         time.sleep(1)
 
     if len(db_blocks) > sample_count:
-        console.print("[dim](... additional data truncated ...)[/dim]\n", markup=True)
-
+        sys.stdout.write("\033[2m(... additional data truncated ...)\033[0;32m\n\n")
+        sys.stdout.flush()
     # Run staged progress bars
     stage_phases = [
         ("surface mapping", 94, 0.03),
         ("endpoint fuzzing", 69, 0.04),
         ("artifact assembly", 83, 0.035),
     ]
-    console.print("Running concurrent stages (simulated):\n")
+    print("Running concurrent stages (simulated):\n")
     for title, total, delay in stage_phases:
         with alive_bar(total, title=f"{title:<18}") as bar:
             for _ in range(total):
                 time.sleep(delay)
                 bar()
-    console.print()
+    print()
 
     # short finalization progress bar
-    console.print("\nDownloading hacked database from", target)
+    print("\nDownloading hacked database from", target)
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.045)
             bar()
-    console.print()
+    print()
 
-    console.print("Decrypting downloaded data...")
+    print("Decrypting downloaded data...")
     with alive_bar(100) as bar:
         for _ in range(100):
             time.sleep(0.024)
             bar()
-    console.print()
-    console.print("[+]", style="bold red", end=" ", markup=False)
+    print()
+    sys.stdout.write("\033[1;31m[+]\033[0;32m ")
+    sys.stdout.flush()
     _typewriter("Decryption successful", speed=TYPEWRITER_SPEED)
 
     # Final report
     owner = _random_owner()
     passphrase = _random_pass(10)
-    console.print("======    WEB APP DETAILS    ======")
-    console.print(f"Website : {display}")               
-    console.print(f"Owner   : {owner}")                 
-    console.print(f"Passphrase: {passphrase}")          
-    console.print("===================================\n")
+    print("======    WEB APP DETAILS    ======")
+    print(f"Website : {display}")               
+    print(f"Owner   : {owner}")                 
+    print(f"Passphrase: {passphrase}")          
+    print("===================================\n")
 
     return {"target": display, "owner": owner, "passphrase": passphrase}

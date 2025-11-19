@@ -1,9 +1,7 @@
 import re, time, random, string, sys
 from alive_progress import alive_bar
-from rich.console import Console
 
 TYPEWRITER_SPEED = 0.005
-console = Console(style="green")
 
 def _typewriter(text, speed=TYPEWRITER_SPEED):
     for char in str(text):
@@ -55,12 +53,12 @@ def osint_cmd(mode: str = None, value: str = None):
     if mode:
         mode = mode.strip().lower()
     while mode not in accepted:
-        mode = console.input("Search by [name/email/phone] (or 'q' to cancel): ").strip().lower()
+        mode = input("Search by [name/email/phone] (or 'q' to cancel): ").strip().lower()
         if mode in ("q", "quit", "exit"):
-            console.print("Cancelled.")
+            print("Cancelled.")
             return None
         if mode not in accepted:
-            console.print("Please choose one of: name, email, phone.")
+            print("Please choose one of: name, email, phone.")
             mode = None
 
     # prompt for value (with validation)
@@ -68,36 +66,36 @@ def osint_cmd(mode: str = None, value: str = None):
         if value:
             value = value.strip()
         else:
-            value = console.input(f"Enter {mode}: ").strip()
+            value = input(f"Enter {mode}: ").strip()
 
         if not value:
-            console.print("Empty input. Enter a value or 'q' to cancel.")
+            print("Empty input. Enter a value or 'q' to cancel.")
             value = None
             continue
 
         if value.lower() in ("q", "quit", "exit"):
-            console.print("Cancelled.")
+            print("Cancelled.")
             return None
 
         if mode == "email" and not _valid_email(value):
-            console.print("That doesn't look like an email. Try again or 'q' to cancel.")
+            print("That doesn't look like an email. Try again or 'q' to cancel.")
             value = None
             continue
 
         if mode == "phone" and not _valid_phone(value):
-            console.print("Phone looks invalid (need 7-15 digits). Try again or 'q' to cancel.")
+            print("Phone looks invalid (need 7-15 digits). Try again or 'q' to cancel.")
             value = None
             continue
 
         if mode == "name" and len(value) < 2:
-            console.print("Name must be at least 2 characters. Try again or 'q' to cancel.")
+            print("Name must be at least 2 characters. Try again or 'q' to cancel.")
             value = None
             continue
 
         break  # valid input
 
     # cinematic initialization
-    console.print("\nInitializing OSINT modules...\n")
+    print("\nInitializing OSINT modules...\n")
     with alive_bar(80) as bar:
         for _ in range(80):
             time.sleep(0.02)
@@ -105,7 +103,7 @@ def osint_cmd(mode: str = None, value: str = None):
     time.sleep(0.25)
 
     # gathering info
-    console.print(f"\nGathering public traces for {value} ({mode})\n")
+    print(f"\nGathering public traces for {value} ({mode})\n")
     with alive_bar(120) as bar:
         for _ in range(120):
             time.sleep(0.02)
@@ -158,7 +156,8 @@ def osint_cmd(mode: str = None, value: str = None):
         ]
 
     for stub, text in script_lines:
-        console.print(stub, style="bold red", end=" ", markup=False)
+        sys.stdout.write(f"\033[1;31m{stub}\033[0;32m ")
+        sys.stdout.flush()
         _typewriter(text, speed=tw_speed)
         time.sleep(random.uniform(0.06, 0.18))
 
@@ -186,17 +185,17 @@ def osint_cmd(mode: str = None, value: str = None):
     gen_pw = _random_password(10)
 
     # final reveal
-    console.print()
-    console.print("[+]", style="bold red", end=" ", markup=False)
+    print() 
+    sys.stdout.write("\033[1;31m[+]\033[0;32m ")
+    sys.stdout.flush()
     _typewriter("OSINT snapshot obtained", speed=TYPEWRITER_SPEED)
     time.sleep(0.12)
 
-    console.print("Name     :", name)
-    console.print("Phone    :", phone)
-    console.print("Email    :", email)
-    console.print("Address  :", address)
-    console.print()
-
+    print("Name     :", name)
+    print("Phone    :", phone)
+    print("Email    :", email)
+    print("Address  :", address)
+    print()
     _typewriter("Common passwords found (top matches):", speed=TYPEWRITER_SPEED)
     for p in common_pw:
         _typewriter(f" - {p}", speed=TYPEWRITER_SPEED)
