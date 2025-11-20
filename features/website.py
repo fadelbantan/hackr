@@ -1,5 +1,5 @@
 import os, time, random, string, re, runpy, sys
-from alive_progress import alive_bar
+from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn, TimeRemainingColumn
 
 TYPEWRITER_SPEED = 0.005
 
@@ -41,14 +41,26 @@ def _random_owner():
     last = ["Ops", "Guard", "Labs", "Security", "Core", "Systems", "Grid"]
     return random.choice(first) + random.choice(last)
 
+def _basic_progress(description, total):
+    """Create a basic progress bar"""
+    return Progress(
+        SpinnerColumn(style="magenta"),
+        TextColumn("[bold cyan]{task.description}"),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TimeElapsedColumn(),
+        TimeRemainingColumn(),
+    )
+
 # main command
 def website_cmd(target: str = None):
     # Initialization progress bar 
     print("\nInitializing...\n")
-    with alive_bar(100) as bar:
+    with _basic_progress("Initializing", 100) as progress:
+        task = progress.add_task("Initializing", total=100)
         for _ in range(100):
             time.sleep(0.025)
-            bar()
+            progress.update(task, advance=1)
     print()
 
     # Prompt for target if not omitted
@@ -76,19 +88,18 @@ def website_cmd(target: str = None):
     # Gathering information timer with multi-phase indicators
     print(f"\nGathering information on {target}\n")
     recon_phases = [
-        ("dns sweep", 90, 0), # TODO: adjust delays as needed
-        ("cert telemetry", 70, 0),
-        ("service census", 80, 0),
-        ("exposure diff", 85, 0),
+        ("dns sweep", 90, 0.02),
+        ("cert telemetry", 70, 0.02),
+        ("service census", 80, 0.02),
+        ("exposure diff", 85, 0.02),
     ]
     for title, total, delay in recon_phases:
-        with alive_bar(total, title=f"{title:<16}") as bar:
+        with _basic_progress(title, total) as progress:
+            task = progress.add_task(title, total=total)
             for _ in range(total):
                 time.sleep(delay)
-                bar()
-        print()
-
-    # execution lines
+                progress.update(task, advance=1)
+    print() # execution lines
     script_lines = [
         ("[dns]", f"passive DNS / WHOIS sweep on {display} (RiskIQ, SecurityTrails mirrors)"),
         ("[cert]", "certificate transparency delta via crt.sh and Google CT (SAN churn, issuers)"),
@@ -146,25 +157,28 @@ def website_cmd(target: str = None):
     ]
     print("Running concurrent stages (simulated):\n")
     for title, total, delay in stage_phases:
-        with alive_bar(total, title=f"{title:<18}") as bar:
+        with _basic_progress(title, total) as progress:
+            task = progress.add_task(title, total=total)
             for _ in range(total):
                 time.sleep(delay)
-                bar()
+                progress.update(task, advance=1)
     print()
 
     # short finalization progress bar
     print("\nDownloading hacked database from", target)
-    with alive_bar(100) as bar:
+    with _basic_progress("Downloading", 100) as progress:
+        task = progress.add_task("Downloading", total=100)
         for _ in range(100):
             time.sleep(0.045)
-            bar()
+            progress.update(task, advance=1)
     print()
 
     print("Decrypting downloaded data...")
-    with alive_bar(100) as bar:
+    with _basic_progress("Decrypting", 100) as progress:
+        task = progress.add_task("Decrypting", total=100)
         for _ in range(100):
             time.sleep(0.024)
-            bar()
+            progress.update(task, advance=1)
     print()
     sys.stdout.write("\033[1;31m[+]\033[0;32m ")
     sys.stdout.flush()
@@ -173,10 +187,14 @@ def website_cmd(target: str = None):
     # Final report
     owner = _random_owner()
     passphrase = _random_pass(10)
+    sys.stdout.write("\033[33m") # Switch to yellow
+    sys.stdout.flush()
     print("======    WEB APP DETAILS    ======")
     print(f"Website : {display}")               
     print(f"Owner   : {owner}")                 
     print(f"Passphrase: {passphrase}")          
     print("===================================\n")
+    sys.stdout.write("\033[32m") # Back to green
+    sys.stdout.flush()
 
     return {"target": display, "owner": owner, "passphrase": passphrase}

@@ -1,5 +1,5 @@
 import time, random, string, sys
-from alive_progress import alive_bar
+from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn, TimeRemainingColumn
 
 TYPEWRITER_SPEED = 0.005
 
@@ -14,6 +14,17 @@ def _typewriter(text, speed=TYPEWRITER_SPEED):
 def _random_password(length=10):
     chars = string.ascii_letters + string.digits
     return "".join(random.choice(chars) for _ in range(length))
+
+def _basic_progress(description, total):
+    """Create a basic progress bar"""
+    return Progress(
+        SpinnerColumn(style="magenta"),
+        TextColumn("[bold cyan]{task.description}"),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TimeElapsedColumn(),
+        TimeRemainingColumn(),
+    )
 
 def socials_cmd(username=None):
     # if a username was provided as an argument, validate it
@@ -32,14 +43,15 @@ def socials_cmd(username=None):
             if len(username) < 3:
                 print("Username must be at least 3 characters.")
                 continue
-            break  # when a valid username is received
+            break # when a valid username is received
 
     # Initialization progress bar
     print("\nInitializing...\n")
-    with alive_bar(100) as bar:
+    with _basic_progress("Initializing", 100) as progress:
+        task = progress.add_task("Initializing", total=100)
         for _ in range(100):
             time.sleep(0.025)
-            bar()
+            progress.update(task, advance=1)
     print()
     time.sleep(0.8)
 
@@ -50,10 +62,11 @@ def socials_cmd(username=None):
     
     # Executing timer
     print("\nExecuting exploits...\n")
-    with alive_bar(80) as bar:
+    with _basic_progress("Executing", 80) as progress:
+        task = progress.add_task("Executing", total=80)
         for _ in range(80):
             time.sleep(0.065)
-            bar()
+            progress.update(task, advance=1)
     print()
     time.sleep(0.7)
 
@@ -65,16 +78,17 @@ def socials_cmd(username=None):
 
     # Alive progress bars for each phase of the sweep
     progress_phases = [
-        ("Facebook  ", 98, 0.05),
-        ("Instagram ", 45, 0.03),
-        ("Snapchat  ", 83, 0.098),
-        ("X         ", 95, 0.022),
+        ("Facebook", 98, 0.05),
+        ("Instagram", 45, 0.03),
+        ("Snapchat", 83, 0.098),
+        ("X", 95, 0.022),
     ]
     for title, total, delay in progress_phases:
-        with alive_bar(total, title=f"{title:<16}") as bar:
+        with _basic_progress(title, total) as progress:
+            task = progress.add_task(title, total=total)
             for _ in range(total):
                 time.sleep(delay)
-                bar()
+                progress.update(task, advance=1)
 
     
     # execution lines
@@ -105,10 +119,11 @@ def socials_cmd(username=None):
     sys.stdout.write("\033[1;31m[report]\033[0;32m ")
     sys.stdout.flush()
     _typewriter("consolidating findings and drafting exposure summary", speed=TYPEWRITER_SPEED)
-    with alive_bar(100) as bar:
+    with _basic_progress("Generating report", 100) as progress:
+        task = progress.add_task("Generating report", total=100)
         for _ in range(100):
             time.sleep(0.05)
-            bar()
+            progress.update(task, advance=1)
     print()
     time.sleep(1.3)
 
@@ -117,11 +132,15 @@ def socials_cmd(username=None):
     password = _random_password(10)
     email = f"{username}.{random.randint(1,999)}@{random.choice(domain)}.com"
 
+    sys.stdout.write("\033[33m") # Switch to yellow
+    sys.stdout.flush()
     print("\n======    HACK REPORT   ======")
     print(f"Username : {username}")
     print(f"Email    : {email}")
     print(f"Password : {password}")
     print("===============================\n")
+    sys.stdout.write("\033[32m") # Back to green
+    sys.stdout.flush()
     time.sleep(0.8)
 
     # prompt what to do next

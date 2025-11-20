@@ -1,5 +1,5 @@
 import re, time, random, string, sys
-from alive_progress import alive_bar
+from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn, TimeRemainingColumn
 
 TYPEWRITER_SPEED = 0.005
 
@@ -40,6 +40,17 @@ def _random_email_from_name(name):
     local = re.sub(r"\s+", ".", name.strip().lower())
     domain = random.choice(["mail.com","outlook.uk.co","icloud.com","hotmail.co"])
     return f"{local}.{random.randint(1,999)}@{domain}"
+
+def _basic_progress(description, total):
+    """Create a basic progress bar with temp1 style"""
+    return Progress(
+        SpinnerColumn(style="magenta"),
+        TextColumn("[bold cyan]{task.description}"),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TimeElapsedColumn(),
+        TimeRemainingColumn(),
+    )
 
 # Main function
 def osint_cmd(mode: str = None, value: str = None):
@@ -96,18 +107,20 @@ def osint_cmd(mode: str = None, value: str = None):
 
     # cinematic initialization
     print("\nInitializing OSINT modules...\n")
-    with alive_bar(80) as bar:
+    with _basic_progress("Initializing", 80) as progress:
+        task = progress.add_task("Initializing", total=80)
         for _ in range(80):
             time.sleep(0.02)
-            bar()
+            progress.update(task, advance=1)
     time.sleep(0.25)
 
     # gathering info
     print(f"\nGathering public traces for {value} ({mode})\n")
-    with alive_bar(120) as bar:
+    with _basic_progress("Scanning", 120) as progress:
+        task = progress.add_task("Scanning", total=120)
         for _ in range(120):
             time.sleep(0.02)
-            bar()
+            progress.update(task, advance=1)
     time.sleep(0.2)
 
     # execution lines
@@ -191,11 +204,15 @@ def osint_cmd(mode: str = None, value: str = None):
     _typewriter("OSINT snapshot obtained", speed=TYPEWRITER_SPEED)
     time.sleep(0.12)
 
+    sys.stdout.write("\033[33m") # Switch to yellow
+    sys.stdout.flush()
     print("Name     :", name)
     print("Phone    :", phone)
     print("Email    :", email)
     print("Address  :", address)
     print()
+    sys.stdout.write("\033[32m") # Back to green
+    sys.stdout.flush()
     _typewriter("Common passwords found (top matches):", speed=TYPEWRITER_SPEED)
     for p in common_pw:
         _typewriter(f" - {p}", speed=TYPEWRITER_SPEED)
