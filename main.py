@@ -5,6 +5,7 @@ from pyfiglet import Figlet
 from features.social_media import socials_cmd
 from features.website import website_cmd
 from features.osint import osint_cmd
+from data.colors import GREEN, RED, BOLD, CLEAR, PURPLE, BLUE
 
 TYPEWRITER_SPEED = 0.005
 
@@ -14,10 +15,10 @@ def clear_terminal():
         os.system("cls")
     else:
         # Reset terminal state to clear screen
-        sys.stdout.write("\033c") # https://en.cppreference.com/w/c/language/ascii.html
+        sys.stdout.write("\033c")
         sys.stdout.flush()
     # Set green as default color
-    sys.stdout.write("\033[32m")
+    sys.stdout.write(GREEN)
     sys.stdout.flush()
 
 # Main Header using Figlet library
@@ -28,11 +29,11 @@ def print_header():
 # Help menu
 def print_help():
     help_text = f"""
-\033[1mhackr\033[0m
+{BOLD}{BLUE}hackr{PURPLE}
 A hacking simulation to get the feel of the real thing.
 Use the commands below to navigate through the different tools available.
 
-\033[1mCOMMANDS\033[0m
+{BOLD}{BLUE}COMMANDS{PURPLE}
 socials, s <username> : Retrieve social media password for <username>.
                         If <username> is omitted, you will be prompted to enter one.
 
@@ -56,7 +57,7 @@ def repl(username):
     print()
     while True:
         # Red username@hackr, green for rest
-        sys.stdout.write(f"\033[1;31m{username}@hackr\033[0;32m $ ")
+        sys.stdout.write(f"{BOLD}{RED}{username}@hackr{CLEAR}{GREEN} $ ")
         sys.stdout.flush()
         line = input().strip()
         # If enter is pressed without any input, start loop again
@@ -81,6 +82,7 @@ def repl(username):
             break
 
         elif cmd == "socials" or cmd == "s":
+            # preserve original behavior: accept a single arg if provided, otherwise let the feature prompt
             arg = cmd_parts[1] if len(cmd_parts) > 1 else None
             if arg is not None and len(arg) < 3:
                 print("Error: username must be at least 3 characters.")
@@ -92,18 +94,22 @@ def repl(username):
             website_cmd(arg)
 
         elif cmd == "osint" or cmd == "o":
-            # preserve original behavior: accept a single arg if provided, otherwise let the feature prompt
             arg = cmd_parts[1] if len(cmd_parts) > 1 else None
             osint_cmd(mode=None, value=arg)
 
+        # Hint for the next command ;)
+        elif cmd == "t" or cmd == "type":
+            hacktype_cmd = ' '.join(cmd_parts[1:]) if len(cmd_parts) > 1 else ''
+
         else:
-            sys.stdout.write(f"\033[1;31m[pending]\033[0;32m Command '{cmd}' awaiting implementation.\n")
+            sys.stdout.write(f"{RED}[pending]{GREEN} Command '{cmd}' awaiting implementation.\n")
             sys.stdout.flush()
 
 
 def main():
     # Set green color before any input
-    sys.stdout.write("\033[32m")
+    sys.stdout.write(GREEN)
+    # Flush output buffer to ensure color is applied immediately
     sys.stdout.flush()
     name = input("Enter username: ").strip() or "root"
     clear_terminal()

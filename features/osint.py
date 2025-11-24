@@ -1,5 +1,6 @@
 import re, time, random, string, sys
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn, TimeRemainingColumn
+from data.colors import GREEN, RED, YELLOW, BOLD, CLEAR
 
 TYPEWRITER_SPEED = 0.005
 
@@ -169,7 +170,7 @@ def osint_cmd(mode: str = None, value: str = None):
         ]
 
     for stub, text in script_lines:
-        sys.stdout.write(f"\033[1;31m{stub}\033[0;32m ")
+        sys.stdout.write(f"{BOLD}{RED}{stub}{CLEAR}{GREEN} ")
         sys.stdout.flush()
         _typewriter(text, speed=tw_speed)
         time.sleep(random.uniform(0.06, 0.18))
@@ -199,19 +200,19 @@ def osint_cmd(mode: str = None, value: str = None):
 
     # final reveal
     print() 
-    sys.stdout.write("\033[1;31m[+]\033[0;32m ")
+    sys.stdout.write(f"{BOLD}{RED}[+]{CLEAR}{GREEN} ")
     sys.stdout.flush()
     _typewriter("OSINT snapshot obtained", speed=TYPEWRITER_SPEED)
     time.sleep(0.12)
 
-    sys.stdout.write("\033[33m") # Switch to yellow
+    sys.stdout.write(YELLOW)  # Switch to yellow
     sys.stdout.flush()
     print("Name     :", name)
     print("Phone    :", phone)
     print("Email    :", email)
     print("Address  :", address)
     print()
-    sys.stdout.write("\033[32m") # Back to green
+    sys.stdout.write(GREEN)  # Back to green
     sys.stdout.flush()
     _typewriter("Common passwords found (top matches):", speed=TYPEWRITER_SPEED)
     for p in common_pw:

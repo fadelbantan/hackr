@@ -1,5 +1,6 @@
 import time, random, string, sys
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn, TimeRemainingColumn
+from data.colors import GREEN, RED, YELLOW, BOLD, CLEAR
 
 TYPEWRITER_SPEED = 0.005
 
@@ -71,7 +72,7 @@ def socials_cmd(username=None):
     time.sleep(0.7)
 
     print()
-    sys.stdout.write("\033[1;31m[socials]\033[0;32m ")
+    sys.stdout.write(f"{BOLD}{RED}[socials]{CLEAR}{GREEN} ")
     sys.stdout.flush()
     _typewriter(f"enumerating public profiles for @{username} (X, Instagram, Facebook, LinkedIn)", speed=TYPEWRITER_SPEED)
     time.sleep(0.10)
@@ -108,7 +109,7 @@ def socials_cmd(username=None):
 
     print()
     for stub, text in lines:
-        sys.stdout.write(f"\033[1;31m{stub}\033[0;32m ")
+        sys.stdout.write(f"{BOLD}{RED}{stub}{CLEAR}{GREEN} ")
         sys.stdout.flush()
         _typewriter(text, speed=TYPEWRITER_SPEED)
         time.sleep(random.uniform(0.08, 0.18))
@@ -116,7 +117,7 @@ def socials_cmd(username=None):
 
     # Final report progress bar
     print()
-    sys.stdout.write("\033[1;31m[report]\033[0;32m ")
+    sys.stdout.write(f"{BOLD}{RED}[report]{CLEAR}{GREEN} ")
     sys.stdout.flush()
     _typewriter("consolidating findings and drafting exposure summary", speed=TYPEWRITER_SPEED)
     with _basic_progress("Generating report", 100) as progress:
@@ -127,19 +128,19 @@ def socials_cmd(username=None):
     print()
     time.sleep(1.3)
 
-    # Final report
+    # Final report in yellow
     domain = ["gmail", "hotmail", "mail", "outlook", "icloud"]
     password = _random_password(10)
     email = f"{username}.{random.randint(1,999)}@{random.choice(domain)}.com"
 
-    sys.stdout.write("\033[33m") # Switch to yellow
+    sys.stdout.write(YELLOW)  # Switch to yellow
     sys.stdout.flush()
     print("\n======    HACK REPORT   ======")
     print(f"Username : {username}")
     print(f"Email    : {email}")
     print(f"Password : {password}")
     print("===============================\n")
-    sys.stdout.write("\033[32m") # Back to green
+    sys.stdout.write(GREEN)  # Back to green
     sys.stdout.flush()
     time.sleep(0.8)
 

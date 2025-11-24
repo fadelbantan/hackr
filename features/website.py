@@ -1,5 +1,6 @@
 import os, time, random, string, re, runpy, sys
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn, TimeRemainingColumn
+from data.colors import GREEN, RED, YELLOW, BOLD, CLEAR
 
 TYPEWRITER_SPEED = 0.005
 
@@ -117,7 +118,7 @@ def website_cmd(target: str = None):
     ]
 
     for stub, text in script_lines:
-        sys.stdout.write(f"\033[1;31m{stub}\033[0;32m ")
+        sys.stdout.write(f"{BOLD}{RED}{stub}{CLEAR}{GREEN} ")
         sys.stdout.flush()
         _typewriter(text, speed=TYPEWRITER_SPEED)
         time.sleep(random.uniform(0.05, 0.15))
@@ -147,7 +148,7 @@ def website_cmd(target: str = None):
         time.sleep(1)
 
     if len(db_blocks) > sample_count:
-        sys.stdout.write("\033[2m(... additional data truncated ...)\033[0;32m\n\n")
+        sys.stdout.write(f"{CLEAR}(... additional data truncated ...){GREEN}\n\n")
         sys.stdout.flush()
     # Run staged progress bars
     stage_phases = [
@@ -180,21 +181,21 @@ def website_cmd(target: str = None):
             time.sleep(0.024)
             progress.update(task, advance=1)
     print()
-    sys.stdout.write("\033[1;31m[+]\033[0;32m ")
+    sys.stdout.write(f"{BOLD}{RED}[+]{CLEAR}{GREEN} ")
     sys.stdout.flush()
     _typewriter("Decryption successful", speed=TYPEWRITER_SPEED)
 
     # Final report
     owner = _random_owner()
     passphrase = _random_pass(10)
-    sys.stdout.write("\033[33m") # Switch to yellow
+    sys.stdout.write(YELLOW)
     sys.stdout.flush()
     print("======    WEB APP DETAILS    ======")
-    print(f"Website : {display}")               
-    print(f"Owner   : {owner}")                 
-    print(f"Passphrase: {passphrase}")          
+    print(f"Website : {display}")
+    print(f"Owner   : {owner}")
+    print(f"Passphrase: {passphrase}")
     print("===================================\n")
-    sys.stdout.write("\033[32m") # Back to green
+    sys.stdout.write(GREEN)
     sys.stdout.flush()
 
     return {"target": display, "owner": owner, "passphrase": passphrase}
