@@ -55,8 +55,7 @@ def _basic_progress(description, total):
 
 # main command
 def website_cmd(target: str = None):
-    # Initialization progress bar 
-    print("\nInitializing...\n")
+    # Initialization progress bar
     with _basic_progress("Initializing", 100) as progress:
         task = progress.add_task("Initializing", total=100)
         for _ in range(100):
