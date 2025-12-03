@@ -40,11 +40,14 @@ git clone https://github.com/fadelbantan/hackr.git
 cd hackr
 
 # (Optional) Create and activate a virtual environment
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate   # On Windows: .venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
+
+# Finally
+./hackr.sh
 ```
 ---
 ## Tech Stack
